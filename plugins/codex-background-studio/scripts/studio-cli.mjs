@@ -94,9 +94,16 @@ async function discoverCodex() {
   }
 
   if (process.platform === "win32") {
-    const script = "$p=Get-AppxPackage OpenAI.Codex|Sort-Object Version -Descending|Select-Object -First 1;if($p){Join-Path $p.InstallLocation 'app\\ChatGPT.exe'}";
-    const executable = commandOutput("powershell.exe", ["-NoProfile", "-Command", script]);
-    if (executable && await exists(executable)) return { executable, launchKind: "executable" };
+    const script = "$p=Get-AppxPackage OpenAI.Codex|Sort-Object Version -Descending|Select-Object -First 1;if($p){$m=Get-AppxPackageManifest $p;$a=$m.Package.Applications.Application|Select-Object -First 1;if($a){[pscustomobject]@{Executable=(Join-Path $p.InstallLocation $a.Executable);AppUserModelId=($p.PackageFamilyName+'!'+$a.Id)}|ConvertTo-Json -Compress}}";
+    const output = commandOutput("powershell.exe", ["-NoProfile", "-Command", script]);
+    const packageInfo = output ? JSON.parse(output) : null;
+    if (packageInfo?.Executable && packageInfo?.AppUserModelId && await exists(packageInfo.Executable)) {
+      return {
+        executable: packageInfo.Executable,
+        appUserModelId: packageInfo.AppUserModelId,
+        launchKind: "windows-app",
+      };
+    }
   }
 
   if (process.platform === "darwin") {
@@ -168,6 +175,18 @@ async function waitForNormalExit(app) {
 
 function launchCodex(app, port) {
   const debugArgs = [`--remote-debugging-address=127.0.0.1`, `--remote-debugging-port=${port}`];
+  if (app.launchKind === "windows-app") {
+    const activator = path.join(pluginRoot, "scripts", "windows-activate.ps1");
+    const result = spawnSync("powershell.exe", [
+      "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", activator,
+      "-AppUserModelId", app.appUserModelId,
+      "-Arguments", debugArgs.join(" "),
+    ], { encoding: "utf8", windowsHide: true });
+    if (result.status !== 0) {
+      throw new Error(`Windows packaged Codex activation failed: ${result.stderr || result.stdout || result.error?.message}`);
+    }
+    return;
+  }
   const command = app.launchKind === "mac-bundle" ? "open" : app.executable;
   const args = app.launchKind === "mac-bundle" ? ["-na", app.executable, "--args", ...debugArgs] : debugArgs;
   const child = spawn(command, args, { detached: true, stdio: "ignore", windowsHide: true });
@@ -321,6 +340,10 @@ async function install() {
   await fs.copyFile(path.join(here, "process-lifecycle.mjs"), path.join(root, "scripts", "process-lifecycle.mjs"));
   const shortcutHelper = path.join(pluginRoot, "scripts", "windows-shortcuts.ps1");
   if (await exists(shortcutHelper)) await fs.copyFile(shortcutHelper, path.join(root, "scripts", "windows-shortcuts.ps1"));
+  const windowsLauncher = path.join(pluginRoot, "scripts", "windows-launch.ps1");
+  if (await exists(windowsLauncher)) await fs.copyFile(windowsLauncher, path.join(root, "scripts", "windows-launch.ps1"));
+  const windowsActivator = path.join(pluginRoot, "scripts", "windows-activate.ps1");
+  if (await exists(windowsActivator)) await fs.copyFile(windowsActivator, path.join(root, "scripts", "windows-activate.ps1"));
   await writeJson(path.join(root, "installation.json"), {
     version: "0.1.0",
     source: pluginRoot,

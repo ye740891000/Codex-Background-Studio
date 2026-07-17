@@ -8,13 +8,19 @@ import { pathToFileURL } from "node:url";
 
 const repo = path.resolve(import.meta.dirname, "..");
 const plugin = path.join(repo, "plugins", "codex-background-studio");
+const rootInstallCmd = path.join(repo, "install.cmd");
+const rootInstallPowerShell = path.join(repo, "install.ps1");
 const cli = path.join(plugin, "scripts", "studio-cli.mjs");
 const macosLauncher = path.join(plugin, "scripts", "macos-launcher.mjs");
 const processLifecycle = path.join(plugin, "scripts", "process-lifecycle.mjs");
+const windowsLauncher = path.join(plugin, "scripts", "windows-launch.ps1");
+const windowsActivator = path.join(plugin, "scripts", "windows-activate.ps1");
+const windowsShortcuts = path.join(plugin, "scripts", "windows-shortcuts.ps1");
 const injector = path.join(plugin, "runtime", "injector.mjs");
 const renderer = path.join(plugin, "runtime", "assets", "renderer-inject.js");
 const stylesheet = path.join(plugin, "runtime", "assets", "background-studio.css");
 const defaultBackground = path.join(plugin, "runtime", "assets", "default-background.png");
+const appIcon = path.join(plugin, "runtime", "assets", "app-icon.ico");
 
 test("runtime assets build a renderer payload", () => {
   const result = spawnSync(process.execPath, [injector, "--validate-assets"], { encoding: "utf8" });
@@ -57,6 +63,8 @@ test("isolated install and uninstall do not touch desktop integration", () => {
     assert.ok(fs.existsSync(path.join(home, "runtime", "assets", "default-background.png")));
     assert.ok(fs.existsSync(path.join(home, "scripts", "studio-cli.mjs")));
     assert.ok(fs.existsSync(path.join(home, "scripts", "macos-launcher.mjs")));
+    assert.ok(fs.existsSync(path.join(home, "scripts", "windows-launch.ps1")));
+    assert.ok(fs.existsSync(path.join(home, "scripts", "windows-activate.ps1")));
 
     const uninstall = spawnSync(process.execPath, [cli, "uninstall", "--port", "64321"], { encoding: "utf8", env });
     assert.equal(uninstall.status, 0, uninstall.stderr);
@@ -64,6 +72,41 @@ test("isolated install and uninstall do not touch desktop integration", () => {
   } finally {
     fs.rmSync(home, { recursive: true, force: true });
   }
+});
+
+test("Windows launcher keeps status visible and shortcuts use the app icon", () => {
+  const launcherSource = fs.readFileSync(windowsLauncher, "utf8");
+  const shortcutSource = fs.readFileSync(windowsShortcuts, "utf8");
+  const icon = fs.readFileSync(appIcon);
+
+  assert.match(launcherSource, /studio-cli\.mjs/);
+  assert.match(launcherSource, /Read-Host/);
+  assert.match(shortcutSource, /windows-launch\.ps1/);
+  assert.match(shortcutSource, /IconLocation/);
+  assert.deepEqual([...icon.subarray(0, 4)], [0, 0, 1, 0]);
+});
+
+test("Windows MSIX launch uses package activation instead of spawning WindowsApps directly", () => {
+  const cliSource = fs.readFileSync(cli, "utf8");
+  const activatorSource = fs.readFileSync(windowsActivator, "utf8");
+
+  assert.match(cliSource, /appUserModelId/);
+  assert.match(cliSource, /launchKind:\s*"windows-app"/);
+  assert.match(cliSource, /windows-activate\.ps1/);
+  assert.match(activatorSource, /IApplicationActivationManager/);
+  assert.match(activatorSource, /ActivateApplication/);
+});
+
+test("Windows install entry points share one visible and diagnosable path", () => {
+  const cmdSource = fs.readFileSync(rootInstallCmd, "utf8");
+  const powerShellSource = fs.readFileSync(rootInstallPowerShell, "utf8");
+
+  assert.match(cmdSource, /powershell\.exe/i);
+  assert.match(cmdSource, /install\.ps1/i);
+  assert.match(cmdSource, /Installation failed/i);
+  assert.match(powerShellSource, /Get-Command node/);
+  assert.match(powerShellSource, /studio-cli\.mjs/);
+  assert.match(powerShellSource, /Installation failed/i);
 });
 
 test("verification waits for the Codex renderer to finish mounting", () => {

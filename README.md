@@ -16,6 +16,8 @@
 4. 正常退出当前 Codex。
 5. 双击桌面的 **Codex Background Studio**，以后也始终从这个快捷方式打开。
 
+如果启动窗口提示 Codex 仍在运行，请从 Codex 菜单完全退出；仅关闭窗口时进程可能仍留在后台。保持启动窗口打开，Codex 退出后它会自动继续；启动失败时窗口会保留错误信息。
+
 也可以在 PowerShell 中运行：
 
 ```powershell

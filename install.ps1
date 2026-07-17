@@ -1,2 +1,12 @@
-& (Join-Path $PSScriptRoot 'plugins/codex-background-studio/install.ps1') @args
-exit $LASTEXITCODE
+$ErrorActionPreference = 'Stop'
+
+try {
+  $node = (Get-Command node -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+  $cli = Join-Path $PSScriptRoot 'plugins/codex-background-studio/scripts/studio-cli.mjs'
+  & $node $cli install @args
+  if ($LASTEXITCODE -ne 0) { throw "Installer exited with code $LASTEXITCODE" }
+  exit 0
+} catch {
+  Write-Error "Installation failed: $($_.Exception.Message)"
+  exit 1
+}
