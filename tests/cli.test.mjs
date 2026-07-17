@@ -9,6 +9,7 @@ import { pathToFileURL } from "node:url";
 const repo = path.resolve(import.meta.dirname, "..");
 const plugin = path.join(repo, "plugins", "codex-background-studio");
 const cli = path.join(plugin, "scripts", "studio-cli.mjs");
+const macosLauncher = path.join(plugin, "scripts", "macos-launcher.mjs");
 const processLifecycle = path.join(plugin, "scripts", "process-lifecycle.mjs");
 const injector = path.join(plugin, "runtime", "injector.mjs");
 const renderer = path.join(plugin, "runtime", "assets", "renderer-inject.js");
@@ -54,6 +55,7 @@ test("isolated install and uninstall do not touch desktop integration", () => {
     assert.ok(fs.existsSync(path.join(home, "runtime", "injector.mjs")));
     assert.ok(fs.existsSync(path.join(home, "runtime", "assets", "default-background.png")));
     assert.ok(fs.existsSync(path.join(home, "scripts", "studio-cli.mjs")));
+    assert.ok(fs.existsSync(path.join(home, "scripts", "macos-launcher.mjs")));
 
     const uninstall = spawnSync(process.execPath, [cli, "uninstall", "--port", "64321"], { encoding: "utf8", env });
     assert.equal(uninstall.status, 0, uninstall.stderr);
@@ -61,6 +63,19 @@ test("isolated install and uninstall do not touch desktop integration", () => {
   } finally {
     fs.rmSync(home, { recursive: true, force: true });
   }
+});
+
+test("macOS app launcher closes only its successful Terminal tab", async () => {
+  const { buildMacAutoCloseLauncher } = await import(pathToFileURL(macosLauncher));
+  const script = buildMacAutoCloseLauncher("/opt/homebrew/bin/node", "/Users/test/Library/Application Support/CodexBackgroundStudio/scripts/studio-cli.mjs");
+
+  assert.match(script, /launch_status=\$\?/);
+  assert.match(script, /"\$launch_status" -eq 0/);
+  assert.match(script, /tty of terminalTab is targetTty/);
+  assert.match(script, /count of tabs of terminalWindow/);
+  assert.match(script, /close terminalTab/);
+  assert.match(script, /close terminalWindow/);
+  assert.match(script, /exit "\$launch_status"/);
 });
 
 test("macOS exit wait tracks the original main process instead of a replacement", async () => {
@@ -95,6 +110,7 @@ test("macOS install reports and creates executable launch entries", { skip: proc
   const appLauncher = path.join(home, "Applications", "Codex Background Studio.app");
   const appExecutable = path.join(appLauncher, "Contents", "MacOS", "CodexBackgroundStudio");
   const appIcon = path.join(appLauncher, "Contents", "Resources", "AppIcon.icns");
+  const appLaunchEntry = path.join(appLauncher, "Contents", "Resources", "Launch.command");
   const uninstaller = path.join(home, "Applications", "Uninstall Codex Background Studio.command");
   try {
     const install = spawnSync(process.execPath, [cli, "install"], { encoding: "utf8", env });
@@ -105,6 +121,10 @@ test("macOS install reports and creates executable launch entries", { skip: proc
     assert.ok(fs.statSync(launcher).mode & 0o111);
     assert.ok(fs.existsSync(appExecutable));
     assert.ok(fs.statSync(appExecutable).mode & 0o111);
+    assert.ok(fs.existsSync(appLaunchEntry));
+    assert.ok(fs.statSync(appLaunchEntry).mode & 0o111);
+    const launcherSyntax = spawnSync("/bin/sh", ["-n", appLaunchEntry], { encoding: "utf8" });
+    assert.equal(launcherSyntax.status, 0, launcherSyntax.stderr);
     assert.ok(fs.statSync(appIcon).size > 1_000);
     const signature = spawnSync("/usr/bin/codesign", ["--verify", "--deep", "--strict", appLauncher], { encoding: "utf8" });
     assert.equal(signature.status, 0, signature.stderr);

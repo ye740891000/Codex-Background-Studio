@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildMacAutoCloseLauncher } from "./macos-launcher.mjs";
 import { matchingAppProcesses, waitForInitialAppExit } from "./process-lifecycle.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -234,6 +235,7 @@ async function writeUnixLaunchers(root) {
     const appContents = path.join(appEntry, "Contents");
     const appExecutable = path.join(appContents, "MacOS", "CodexBackgroundStudio");
     const appResources = path.join(appContents, "Resources");
+    const appLaunchEntry = path.join(appResources, "Launch.command");
     const uninstallEntry = path.join(applications, "Uninstall Codex Background Studio.command");
     await fs.mkdir(applications, { recursive: true });
     await fs.copyFile(path.join(root, "launch.sh"), launchEntry);
@@ -243,7 +245,9 @@ async function writeUnixLaunchers(root) {
     await fs.rm(appEntry, { recursive: true, force: true });
     await fs.mkdir(path.dirname(appExecutable), { recursive: true });
     await fs.mkdir(appResources, { recursive: true });
-    await fs.writeFile(appExecutable, `#!/bin/sh\nexec /usr/bin/open ${shellQuote(launchEntry)}\n`, "utf8");
+    await fs.writeFile(appLaunchEntry, buildMacAutoCloseLauncher(process.execPath, cli), "utf8");
+    await fs.chmod(appLaunchEntry, 0o755);
+    await fs.writeFile(appExecutable, `#!/bin/sh\nexec /usr/bin/open ${shellQuote(appLaunchEntry)}\n`, "utf8");
     await fs.chmod(appExecutable, 0o755);
     await fs.copyFile(path.join(root, "runtime", "assets", "app-icon.icns"), path.join(appResources, "AppIcon.icns"));
     await fs.writeFile(path.join(appContents, "Info.plist"), `<?xml version="1.0" encoding="UTF-8"?>
@@ -313,6 +317,7 @@ async function install() {
   await fs.cp(sourceRuntime, path.join(root, "runtime"), { recursive: true });
   await fs.mkdir(path.join(root, "scripts"), { recursive: true });
   await fs.copyFile(fileURLToPath(import.meta.url), path.join(root, "scripts", "studio-cli.mjs"));
+  await fs.copyFile(path.join(here, "macos-launcher.mjs"), path.join(root, "scripts", "macos-launcher.mjs"));
   await fs.copyFile(path.join(here, "process-lifecycle.mjs"), path.join(root, "scripts", "process-lifecycle.mjs"));
   const shortcutHelper = path.join(pluginRoot, "scripts", "windows-shortcuts.ps1");
   if (await exists(shortcutHelper)) await fs.copyFile(shortcutHelper, path.join(root, "scripts", "windows-shortcuts.ps1"));

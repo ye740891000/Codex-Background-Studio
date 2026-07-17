@@ -39,7 +39,7 @@ chmod +x install.command launch.command uninstall.command
 open ~/Applications
 ```
 
-如果启动器提示 Codex 已经打开，请保持启动器终端窗口运行，用 `Command+Q` 完全退出 ChatGPT/Codex，并等待启动器自动重新打开应用。不要手动点击图标重开，否则新实例不会携带 Background Studio 调试端口。`Codex Background Studio.app` 会打开这个终端启动流程，并使用项目内置图标显示在 Finder 中。
+如果启动器提示 Codex 已经打开，请保持启动器终端窗口运行，用 `Command+Q` 完全退出 ChatGPT/Codex，并等待启动器自动重新打开应用。不要手动点击图标重开，否则新实例不会携带 Background Studio 调试端口。`Codex Background Studio.app` 会打开这个终端启动流程，并使用项目内置图标显示在 Finder 中。启动成功后，它只会自动关闭本次创建的终端标签页或窗口；启动失败时终端会保留，方便查看错误。
 
 ### Linux
 
