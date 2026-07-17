@@ -1,0 +1,1066 @@
+:root.codex-background-studio-skin {
+  color-scheme: light !important;
+  --background-studio-ink: #4c2364;
+  --background-studio-purple: #8b3dce;
+  --background-studio-violet: #b45cff;
+  --background-studio-pink: #ff73bd;
+  --background-studio-blush: #fff3f9;
+  --background-studio-pearl: rgba(255, 251, 253, .92);
+  --background-studio-line: rgba(221, 122, 184, .42);
+}
+
+html.codex-background-studio-skin body {
+  background:
+    radial-gradient(circle at 78% 2%, rgba(255, 184, 215, .66), transparent 25%),
+    radial-gradient(circle at 24% 12%, rgba(210, 171, 255, .48), transparent 28%),
+    linear-gradient(135deg, #fff9fc 0%, #fceef8 48%, #f3eafd 100%) !important;
+  color: var(--background-studio-ink) !important;
+  font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+}
+
+html.codex-background-studio-skin body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .34;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.98) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(250,151,211,.8) 0 1px, transparent 2px);
+  background-position: 0 0, 23px 31px;
+  background-size: 53px 53px, 67px 67px;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel {
+  background:
+    linear-gradient(180deg, rgba(255,250,253,.98), rgba(255,239,248,.96)) !important;
+  border: 1px solid rgba(229, 151, 198, .45) !important;
+  border-left: 0 !important;
+  border-radius: 0 20px 20px 0 !important;
+  box-shadow: 10px 0 32px rgba(142, 55, 147, .10), inset -1px 0 rgba(255,255,255,.9) !important;
+  backdrop-filter: none !important;
+  color: var(--background-studio-ink) !important;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel nav {
+  background: transparent !important;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel button {
+  color: #55266e !important;
+  transition: transform .16s ease, background .16s ease, box-shadow .16s ease !important;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel button:hover {
+  background: linear-gradient(90deg, rgba(255,211,235,.72), rgba(221,194,255,.62)) !important;
+  box-shadow: inset 0 0 0 1px rgba(207,110,190,.22) !important;
+  transform: translateX(1px);
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label^="切换模式"] {
+  background: transparent !important;
+  border-color: transparent !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #7e36c3 !important;
+  text-shadow: 0 2px 10px rgba(255,89,183,.28);
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label^="切换模式"]::after {
+  content: "✦";
+  margin-left: 2px;
+  color: #f16ab5;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel [class~="bg-token-list-hover-background"],
+html.codex-background-studio-skin aside.app-shell-left-panel [aria-current="page"] {
+  background: linear-gradient(90deg, rgba(229,197,255,.78), rgba(255,202,231,.72)) !important;
+  border: 1px solid rgba(193,101,191,.30) !important;
+  box-shadow: 0 4px 16px rgba(146,70,162,.10) !important;
+}
+
+html.codex-background-studio-skin main.main-surface {
+  background:
+    radial-gradient(circle at 84% 10%, rgba(255,180,221,.34), transparent 30%),
+    radial-gradient(circle at 20% 0%, rgba(214,181,255,.25), transparent 26%),
+    linear-gradient(180deg, #fff8fc 0%, #fff3f9 100%) !important;
+  border: 1px solid rgba(232, 166, 208, .45) !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 20px 0 0 0 !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.95), -8px 0 30px rgba(142,55,147,.08) !important;
+  overflow: hidden !important;
+}
+
+html.codex-background-studio-skin main.main-surface > header.app-header-tint {
+  background:
+    linear-gradient(90deg, rgba(255,249,252,.95), rgba(255,227,243,.84), rgba(229,207,255,.78)) !important;
+  border-bottom: 1px solid rgba(229,151,198,.34) !important;
+  backdrop-filter: none !important;
+}
+
+#codex-background-studio-skin-chrome {
+  position: fixed;
+  z-index: 31;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 20px 0 0 0;
+}
+
+.background-studio-brand {
+  position: absolute;
+  left: 25px;
+  top: 3px;
+  height: 40px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  color: #7730ae;
+  text-shadow: 0 1px 0 white;
+}
+
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-brand { display: flex; }
+.background-studio-brand .background-studio-note { font-size: 29px; color: #ba4dde; filter: drop-shadow(0 2px 4px rgba(255,102,190,.34)); }
+.background-studio-brand b { display: block; font-size: 15px; letter-spacing: .04em; }
+.background-studio-brand small { display: block; margin-top: 1px; color: #9e58bd; font-size: 10px; letter-spacing: .03em; }
+
+.background-studio-signature {
+  position: absolute;
+  right: 92px;
+  top: 6px;
+  display: none;
+  color: #ef73b8;
+  font: italic 20px/1.2 "Segoe Script", "Comic Sans MS", cursive;
+  text-shadow: 0 0 8px white, 0 2px 8px rgba(181,61,143,.24);
+  transform: rotate(-3deg);
+}
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-signature { display: block; }
+
+.background-studio-sparkles { position: absolute; inset: 48px 0 0; opacity: .72; }
+.background-studio-sparkles i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: white; box-shadow: 0 0 10px 3px rgba(255,112,196,.66); }
+.background-studio-sparkles i::before, .background-studio-sparkles i::after { content: ""; position: absolute; left: 2px; top: -6px; width: 1px; height: 17px; background: linear-gradient(transparent, rgba(255,255,255,.95), transparent); }
+.background-studio-sparkles i::after { transform: rotate(90deg); }
+.background-studio-sparkles i:nth-child(1) { left: 7%; top: 11%; }
+.background-studio-sparkles i:nth-child(2) { left: 31%; top: 5%; opacity: .55; }
+.background-studio-sparkles i:nth-child(3) { left: 55%; top: 17%; opacity: .82; }
+.background-studio-sparkles i:nth-child(4) { left: 78%; top: 8%; opacity: .64; }
+.background-studio-sparkles i:nth-child(5) { left: 92%; top: 27%; opacity: .9; }
+.background-studio-sparkles i:nth-child(6) { left: 66%; top: 66%; opacity: .48; }
+
+.background-studio-polaroid {
+  position: absolute;
+  right: 11px;
+  bottom: 74px;
+  width: 116px;
+  height: 150px;
+  display: none;
+  background-image: var(--background-studio-art);
+  background-size: 915% auto;
+  background-position: 100% 100%;
+  border: 7px solid rgba(255,253,253,.96);
+  border-bottom-width: 20px;
+  box-shadow: 0 9px 20px rgba(105,47,107,.22), 0 0 0 1px rgba(197,119,163,.26);
+  transform: rotate(-7deg);
+  border-radius: 2px;
+}
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-polaroid { display: block; }
+.background-studio-polaroid::before { content: "🎀"; position: absolute; left: -21px; top: -24px; font-size: 32px; filter: drop-shadow(0 3px 4px rgba(151,66,119,.25)); }
+
+.background-studio-ribbon {
+  position: absolute;
+  left: 50%;
+  bottom: 68px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  color: #d54f9a;
+  font-size: 30px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 4px 5px rgba(166,66,137,.26));
+}
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-ribbon { display: flex; }
+.background-studio-ribbon span { font-size: 15px; color: #c36dff; }
+
+html.codex-background-studio-skin [role="main"] {
+  background: transparent !important;
+  scrollbar-color: rgba(190,91,192,.52) transparent;
+}
+
+html.codex-background-studio-skin .background-studio-home {
+  --thread-content-max-width: min(950px, calc(100cqw - 44px)) !important;
+  overflow-x: hidden !important;
+}
+
+.background-studio-home > div:first-child {
+  padding-top: 15px !important;
+  min-height: 100% !important;
+}
+
+.background-studio-home > div:first-child > div:first-child {
+  flex: 0 0 430px !important;
+  min-height: 430px !important;
+  align-items: flex-start !important;
+  padding-bottom: 0 !important;
+}
+
+.background-studio-home > div:first-child > div:first-child > div:first-child {
+  position: relative !important;
+  isolation: isolate;
+  width: calc(100% - 44px) !important;
+  max-width: none !important;
+  height: 252px !important;
+  min-height: 252px !important;
+  flex: 0 1 auto !important;
+  padding: 0 !important;
+  border: 2px solid rgba(255,193,221,.90) !important;
+  border-radius: 25px !important;
+  overflow: visible !important;
+  background-image:
+    linear-gradient(90deg, rgba(113,50,178,.06), rgba(255,129,196,.05)),
+    var(--background-studio-art) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100%, auto 300% !important;
+  background-position: center, right 22% !important;
+  box-shadow: 0 14px 34px rgba(150,60,151,.20), inset 0 0 0 4px rgba(255,255,255,.20) !important;
+}
+
+.background-studio-home > div:first-child > div:first-child > div:first-child::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0 auto 0 0;
+  width: 58%;
+  border-radius: 23px 0 0 23px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(90,38,154,.98) 0%, rgba(112,48,170,.94) 54%, rgba(130,56,179,.66) 78%, transparent 100%);
+}
+
+.background-studio-home > div:first-child > div:first-child > div:first-child > div:first-child {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding-left: 38px;
+}
+
+.background-studio-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
+  width: 54% !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+}
+
+.background-studio-home [data-testid="home-icon"] {
+  display: none !important;
+}
+
+.background-studio-home [data-feature="game-source"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  max-width: 100% !important;
+  color: white !important;
+  font-size: clamp(20px, 2vw, 30px) !important;
+  line-height: 1.3 !important;
+  font-weight: 750 !important;
+  text-align: left !important;
+  text-shadow: 0 2px 12px rgba(58,15,92,.42), 0 1px 0 rgba(255,255,255,.28);
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.background-studio-home [data-feature="game-source"]::after {
+  content: "专注当下，把每一步做扎实";
+  display: block;
+  margin-top: 13px;
+  color: rgba(255,248,255,.94);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+
+.background-studio-home [data-feature="game-source"] button {
+  margin: 0 5px;
+  padding: 2px 9px 3px;
+  border: 1px solid rgba(255,226,245,.72);
+  border-radius: 999px;
+  background: rgba(255,233,247,.22);
+  color: #ffe0f3 !important;
+  text-decoration-color: rgba(255,224,243,.72) !important;
+  text-underline-offset: 5px;
+  box-shadow: inset 0 0 12px rgba(255,255,255,.10);
+}
+
+.background-studio-home [data-feature="game-source"] button::before {
+  content: "选择项目 · ";
+  font-size: .48em;
+  font-weight: 600;
+  vertical-align: middle;
+  opacity: .86;
+}
+
+.background-studio-home > div:first-child > div:first-child > div:first-child > div:nth-child(2) {
+  left: 14px !important;
+  right: 14px !important;
+  top: 100% !important;
+  margin-top: 13px !important;
+}
+
+.background-studio-home .group\/home-suggestions {
+  overflow: visible !important;
+}
+
+.background-studio-home .group\/home-suggestions button {
+  position: relative !important;
+  min-height: 126px !important;
+  padding: 14px 13px 12px !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+  border: 1px solid rgba(231,169,197,.82) !important;
+  border-radius: 23px !important;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(255,255,255,.96), transparent 34%),
+    linear-gradient(145deg, rgba(255,251,247,.96), rgba(255,237,246,.96)) !important;
+  color: #4d2567 !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+  box-shadow: 0 8px 18px rgba(120,55,119,.11), inset 0 0 0 3px rgba(255,255,255,.50) !important;
+  transform: translateY(0);
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+
+.background-studio-home .group\/home-suggestions button:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 13px 26px rgba(144,55,137,.18), 0 0 0 2px rgba(205,112,230,.16) !important;
+}
+
+.background-studio-home .group\/home-suggestions button > span:first-child > span:first-child {
+  width: 38px;
+  height: 38px;
+  display: grid !important;
+  place-items: center;
+  margin: 0 auto;
+  border-radius: 50%;
+  color: white !important;
+  background: linear-gradient(145deg, #f68ec6, #a14fe0);
+  box-shadow: 0 0 0 7px rgba(255,218,233,.64), 0 5px 12px rgba(142,61,152,.24);
+}
+.background-studio-home .group\/home-suggestions button svg {
+  width: 21px !important;
+  height: 21px !important;
+  color: white !important;
+}
+.background-studio-home .group\/home-suggestions button > span:first-child {
+  justify-content: center !important;
+}
+.background-studio-home .group\/home-suggestions button > span:last-child {
+  align-items: center !important;
+  text-align: center !important;
+}
+
+html.codex-background-studio-skin .composer-surface-chrome {
+  border: 2px solid rgba(228,132,188,.58) !important;
+  border-radius: 25px !important;
+  background:
+    radial-gradient(circle at 88% 22%, rgba(255,255,255,.92), transparent 24%),
+    linear-gradient(145deg, rgba(255,252,253,.96), rgba(255,235,246,.94)) !important;
+  box-shadow: 0 10px 25px rgba(132,54,125,.15), inset 0 0 0 4px rgba(255,255,255,.45) !important;
+  backdrop-filter: none !important;
+  overflow: visible !important;
+}
+
+html.codex-background-studio-skin .composer-surface-chrome::before {
+  content: "♡";
+  position: absolute;
+  left: -13px;
+  top: -13px;
+  z-index: 20;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: linear-gradient(145deg, #ff96c9, #af55df);
+  box-shadow: 0 4px 12px rgba(136,53,133,.22);
+}
+
+.background-studio-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector) {
+  position: relative;
+  padding-top: 28px !important;
+  border: 1px solid rgba(227,148,195,.44);
+  border-bottom: 0;
+  background: linear-gradient(180deg, rgba(255,248,252,.94), rgba(255,233,246,.88)) !important;
+}
+
+.background-studio-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector)::before {
+  content: "♡  选择项目";
+  position: absolute;
+  left: 13px;
+  top: 6px;
+  z-index: 2;
+  color: #8e3fae;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-shadow: 0 1px white;
+  white-space: nowrap;
+}
+
+.background-studio-home .group\/project-selector > button {
+  border-color: rgba(199,111,189,.38) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(244,224,255,.86)) !important;
+  color: #6f3296 !important;
+  box-shadow: 0 3px 10px rgba(125,57,133,.10) !important;
+}
+
+html.codex-background-studio-skin .ProseMirror {
+  color: #55266c !important;
+  caret-color: #b33fd2 !important;
+}
+
+html.codex-background-studio-skin button[class~="bg-token-foreground"] {
+  background: linear-gradient(145deg, #cf61f0, #a237ca) !important;
+  color: white !important;
+  box-shadow: 0 5px 12px rgba(158,54,176,.26) !important;
+}
+
+html.codex-background-studio-skin article,
+html.codex-background-studio-skin [data-message-author-role] {
+  border-radius: 20px;
+}
+
+@media (max-width: 1120px) {
+  .background-studio-polaroid { display: none !important; }
+  .background-studio-ribbon { bottom: 70px; font-size: 25px; }
+  .background-studio-home { --thread-content-max-width: min(860px, calc(100cqw - 30px)) !important; }
+  .background-studio-home > div:first-child > div:first-child > div:first-child { width: calc(100% - 28px) !important; }
+}
+
+@media (max-width: 900px) {
+  .background-studio-signature { display: none !important; }
+  .background-studio-brand { left: 15px; }
+  .background-studio-brand b { font-size: 13px; }
+  .background-studio-home > div:first-child > div:first-child { flex-basis: 396px !important; min-height: 396px !important; }
+  .background-studio-home > div:first-child > div:first-child > div:first-child { height: 224px !important; min-height: 224px !important; background-size: 100% 100%, auto 300% !important; }
+  .background-studio-home > div:first-child > div:first-child > div:first-child > div:first-child { padding-left: 26px; }
+  .background-studio-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child { width: 66% !important; }
+  .background-studio-home [data-feature="game-source"] { font-size: 18px !important; }
+  .background-studio-home [data-feature="game-source"]::after { font-size: 12px; margin-top: 10px; }
+  .background-studio-home .group\/home-suggestions button { min-height: 114px !important; font-size: 12px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-studio-sparkles i { animation: none !important; }
+}
+
+/* Dark gold base: retain native controls beneath the media layer. */
+:root.codex-background-studio-skin {
+  color-scheme: dark !important;
+  --background-studio-ink: #e5e7eb;
+  --background-studio-purple: #d1a56a;
+  --background-studio-violet: #e5c38e;
+  --background-studio-pink: #a34b35;
+  --background-studio-blush: #151d2b;
+  --background-studio-pearl: rgba(25, 33, 47, .94);
+  --background-studio-line: rgba(196, 144, 83, .38);
+}
+
+html.codex-background-studio-skin body,
+html.codex-background-studio-skin main.main-surface {
+  background: linear-gradient(135deg, #0b1019 0%, #161b24 48%, #202c3e 100%) !important;
+  color: var(--background-studio-ink) !important;
+}
+
+html.codex-background-studio-skin body::before {
+  opacity: .16;
+  background-image: radial-gradient(circle, rgba(234, 193, 129, .8) 0 1px, transparent 2px);
+  background-size: 61px 61px;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel {
+  background: linear-gradient(180deg, rgba(13, 18, 27, .98), rgba(21, 28, 41, .97)) !important;
+  border-color: rgba(176, 129, 77, .34) !important;
+  box-shadow: 10px 0 32px rgba(0, 0, 0, .30), inset -1px 0 rgba(255,255,255,.04) !important;
+  color: #e5e7eb !important;
+}
+
+html.codex-background-studio-skin aside.app-shell-left-panel button { color: #d6dce5 !important; }
+html.codex-background-studio-skin aside.app-shell-left-panel button:hover,
+html.codex-background-studio-skin aside.app-shell-left-panel [class~="bg-token-list-hover-background"],
+html.codex-background-studio-skin aside.app-shell-left-panel [aria-current="page"] {
+  background: linear-gradient(90deg, rgba(121, 82, 49, .54), rgba(46, 61, 80, .62)) !important;
+  border-color: rgba(201, 154, 93, .34) !important;
+  box-shadow: inset 0 0 0 1px rgba(221, 183, 125, .15) !important;
+}
+
+html.codex-background-studio-skin main.main-surface > header.app-header-tint {
+  background: linear-gradient(90deg, rgba(14, 19, 28, .98), rgba(30, 39, 53, .94)) !important;
+  border-bottom-color: rgba(185, 138, 81, .28) !important;
+}
+
+.background-studio-brand { color: #e4bf85; text-shadow: 0 1px 4px #000; }
+.background-studio-brand .background-studio-note { color: #dfb572; filter: drop-shadow(0 2px 4px rgba(0,0,0,.6)); }
+.background-studio-brand small { color: #b3bfcc; }
+.background-studio-signature { color: #d6ae76; font-family: Georgia, serif; text-shadow: 0 2px 8px #000; }
+.background-studio-ribbon { color: #c08b52; filter: drop-shadow(0 4px 5px rgba(0,0,0,.58)); }
+.background-studio-ribbon span { color: #9cacbb; }
+.background-studio-polaroid { border-color: rgba(193, 200, 207, .9); box-shadow: 0 9px 20px rgba(0,0,0,.55), 0 0 0 1px rgba(205, 162, 99, .32); }
+.background-studio-polaroid::before { content: ""; }
+
+.background-studio-home > div:first-child > div:first-child > div:first-child {
+  border-color: rgba(194, 150, 91, .60) !important;
+  background-image: linear-gradient(90deg, rgba(7, 11, 17, .42), rgba(19, 27, 39, .08)), var(--background-studio-art) !important;
+  background-size: 100% 100%, cover !important;
+  background-position: center, center !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.42), inset 0 0 0 2px rgba(235, 203, 150, .12) !important;
+}
+
+.background-studio-home > div:first-child > div:first-child > div:first-child::before {
+  width: 53%;
+  background: linear-gradient(90deg, rgba(8, 12, 18, .96) 0%, rgba(14, 20, 30, .88) 57%, rgba(20, 28, 40, .48) 81%, transparent 100%);
+}
+
+.background-studio-home [data-feature="game-source"] { color: #f3f4f6 !important; text-shadow: 0 2px 12px rgba(0,0,0,.82); }
+.background-studio-home [data-feature="game-source"]::after { color: rgba(229, 231, 235, .88); }
+.background-studio-home [data-feature="game-source"] button { border-color: rgba(222, 184, 126, .60); background: rgba(33, 43, 57, .56); color: #f0d5a4 !important; }
+
+.background-studio-home .group\/home-suggestions button {
+  border-color: rgba(182, 137, 80, .46) !important;
+  background: linear-gradient(145deg, rgba(31, 40, 53, .98), rgba(20, 27, 38, .98)) !important;
+  color: #e7e9ed !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.04) !important;
+}
+.background-studio-home .group\/home-suggestions button:hover { box-shadow: 0 13px 26px rgba(0,0,0,.45), 0 0 0 2px rgba(214, 167, 99, .18) !important; }
+.background-studio-home .group\/home-suggestions button > span:first-child > span:first-child { background: linear-gradient(145deg, #c69a5c, #7d452e); box-shadow: 0 0 0 7px rgba(139, 104, 63, .24), 0 5px 12px rgba(0,0,0,.34); }
+
+html.codex-background-studio-skin .composer-surface-chrome {
+  border-color: rgba(186, 140, 81, .56) !important;
+  background: linear-gradient(145deg, rgba(31, 40, 53, .98), rgba(20, 27, 38, .98)) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,.36), inset 0 0 0 2px rgba(255,255,255,.04) !important;
+}
+html.codex-background-studio-skin .composer-surface-chrome::before { content: ""; background: #c39456; }
+html.codex-background-studio-skin .ProseMirror { color: #e7e9ed !important; caret-color: #e4bb7c !important; }
+html.codex-background-studio-skin button[class~="bg-token-foreground"] { background: linear-gradient(145deg, #bd9057, #743d2d) !important; }
+
+/* Use the supplied illustration as the actual workspace background, with readable live controls above it. */
+html.codex-background-studio-skin main.main-surface {
+  background-image: linear-gradient(90deg, rgba(48, 5, 8, .20), rgba(20, 9, 5, .10)), var(--background-studio-art) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+
+html.codex-background-studio-skin body {
+  background-image: linear-gradient(90deg, rgba(48, 5, 8, .12), rgba(20, 9, 5, .06)), var(--background-studio-art) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+html.codex-background-studio-skin {
+  background-image: linear-gradient(90deg, rgba(48, 5, 8, .12), rgba(20, 9, 5, .06)), var(--background-studio-art) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+
+html.codex-background-studio-skin [role="main"] { background: transparent !important; }
+html.codex-background-studio-skin main.main-surface > header.app-header-tint {
+  background: linear-gradient(90deg, rgba(46, 6, 9, .42), rgba(31, 16, 8, .26)) !important;
+  backdrop-filter: blur(5px) !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel {
+  background: linear-gradient(180deg, rgba(46, 6, 9, .24), rgba(27, 12, 8, .20)) !important;
+  border-color: rgba(224, 177, 95, .42) !important;
+  backdrop-filter: blur(2px) !important;
+}
+html.codex-background-studio-skin .composer-surface-chrome,
+.background-studio-home .group\/home-suggestions button {
+  background: linear-gradient(145deg, rgba(49, 22, 16, .52), rgba(21, 12, 9, .46)) !important;
+  border-color: rgba(220, 169, 91, .54) !important;
+  backdrop-filter: blur(4px) !important;
+}
+.background-studio-sparkles { display: none !important; }
+
+/* Meadow icon treatment: preserve native glyphs while matching the landscape palette. */
+html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label^="切换模式"] {
+  color: #f0c36e !important;
+  text-shadow: 0 2px 10px rgba(170, 47, 30, .40) !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label^="切换模式"]::after {
+  content: "★";
+  color: #ffd76d;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel button svg,
+html.codex-background-studio-skin aside.app-shell-left-panel [role="button"] svg {
+  width: 17px !important;
+  height: 17px !important;
+  padding: 3px;
+  box-sizing: content-box;
+  border-radius: 7px;
+  color: #ffd982 !important;
+  background: linear-gradient(145deg, rgba(196, 53, 35, .34), rgba(165, 108, 35, .30));
+  box-shadow: inset 0 0 0 1px rgba(255, 225, 151, .20), 0 2px 8px rgba(55, 8, 4, .26);
+}
+html.codex-background-studio-skin aside.app-shell-left-panel button:hover svg,
+html.codex-background-studio-skin aside.app-shell-left-panel [aria-current="page"] svg {
+  color: #fff4b2 !important;
+  background: linear-gradient(145deg, rgba(205, 49, 35, .66), rgba(190, 127, 36, .58));
+  box-shadow: inset 0 0 0 1px rgba(255, 229, 154, .38), 0 3px 10px rgba(68, 9, 4, .34);
+}
+html.codex-background-studio-skin main button svg {
+  color: #ffd982 !important;
+  filter: drop-shadow(0 1px 3px rgba(76, 15, 5, .48));
+}
+html.codex-background-studio-skin main button:hover svg,
+html.codex-background-studio-skin main button[aria-pressed="true"] svg {
+  color: #fff3b0 !important;
+}
+html.codex-background-studio-skin button[class~="bg-token-foreground"] {
+  background: linear-gradient(145deg, #d14a32, #b68332) !important;
+  box-shadow: 0 5px 14px rgba(94, 18, 9, .38) !important;
+}
+html.codex-background-studio-skin .ProseMirror { caret-color: #ffd46f !important; }
+.background-studio-home [data-feature="game-source"]::after {
+  content: "专注当下，把每一步做扎实";
+}
+
+/* The task title lives in Codex's draggable toolbar, outside the normal page header. */
+html.codex-background-studio-skin .app-shell-main-content-viewport,
+html.codex-background-studio-skin .app-shell-main-content-viewport .draggable {
+  background: transparent !important;
+  border: 0 !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+html.codex-background-studio-skin .app-shell-main-content-viewport > .relative.isolate.flex.min-h-0.flex-1.overflow-hidden {
+  background: transparent !important;
+}
+html.codex-background-studio-skin main.main-surface > header.app-header-tint,
+html.codex-background-studio-skin .app-header-tint {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+html.codex-background-studio-skin [role="main"] {
+  text-shadow: 0 1px 2px rgba(0, 18, 24, .92), 0 0 7px rgba(0, 16, 22, .72);
+}
+
+/* Persistent image/GIF/video layer. */
+html.codex-background-studio-skin.background-studio-media-active {
+  background: #0b1019 !important;
+}
+html.codex-background-studio-skin.background-studio-media-active body,
+html.codex-background-studio-skin.background-studio-media-active main.main-surface {
+  background: transparent !important;
+}
+html.codex-background-studio-skin.background-studio-media-active main.main-surface {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+html.codex-background-studio-skin.background-studio-media-active body::before { display: none !important; }
+html.codex-background-studio-skin.background-studio-media-active #root {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+#background-studio-media-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #0b1019;
+}
+#background-studio-media-layer .background-studio-media-content {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: var(--background-studio-media-fit, cover);
+  object-position: var(--background-studio-media-x, 50%) var(--background-studio-media-y, 50%);
+  opacity: var(--background-studio-media-opacity, 1);
+  filter: blur(var(--background-studio-media-blur, 0));
+  transform: scale(1.015);
+}
+#background-studio-media-layer .background-studio-media-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--background-studio-scrim-alpha, .08));
+}
+html.codex-background-studio-skin.background-studio-media-active aside.app-shell-left-panel {
+  background: linear-gradient(180deg, rgb(46 6 9 / var(--background-studio-panel-alpha, .24)), rgb(27 12 8 / var(--background-studio-panel-alpha, .24))) !important;
+}
+html.codex-background-studio-skin.background-studio-media-active main.main-surface > header.app-header-tint {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+html.codex-background-studio-skin.background-studio-media-active .composer-surface-chrome,
+html.codex-background-studio-skin.background-studio-media-active .background-studio-home .group\/home-suggestions button {
+  background: linear-gradient(145deg, rgb(49 22 16 / var(--background-studio-composer-alpha, .48)), rgb(21 12 9 / var(--background-studio-composer-alpha, .48))) !important;
+}
+html.codex-background-studio-skin.background-studio-media-active .background-studio-home > div:first-child > div:first-child > div:first-child {
+  background: rgb(14 20 27 / var(--background-studio-header-alpha, .36)) !important;
+}
+html.codex-background-studio-skin.background-studio-media-active .background-studio-polaroid { display: none !important; }
+
+/* The composer should remain quiet and flat over moving or static media. */
+html.codex-background-studio-skin .composer-surface-chrome {
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+html.codex-background-studio-skin .composer-surface-chrome::before {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html.codex-background-studio-skin .background-studio-composer-frame {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  transform: translateY(-12px) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+html.codex-background-studio-skin .background-studio-composer-dock {
+  padding-bottom: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+html.codex-background-studio-skin .background-studio-composer-aux-surface {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  mask-image: none !important;
+}
+html.codex-background-studio-skin .background-studio-composer-aux-surface::before,
+html.codex-background-studio-skin .background-studio-composer-aux-surface::after {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  mask-image: none !important;
+}
+
+#background-studio-background-settings-trigger {
+  position: fixed;
+  z-index: 70;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 214, 126, .42);
+  border-radius: 8px;
+  color: #ffe19a;
+  background: rgba(52, 20, 13, .72);
+  box-shadow: 0 4px 14px rgba(21, 5, 3, .26);
+  cursor: pointer;
+  pointer-events: auto;
+}
+#background-studio-background-settings-trigger:hover {
+  background: rgba(132, 45, 27, .82);
+}
+#background-studio-background-settings-trigger svg {
+  width: 18px;
+  height: 18px;
+  color: currentColor;
+}
+
+#background-studio-background-settings {
+  position: fixed;
+  z-index: 80;
+  width: min(340px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  display: none;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid rgba(255, 218, 139, .36);
+  border-radius: 8px;
+  color: #f6f1e8;
+  background: rgba(18, 21, 27, .96);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, .46);
+  font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 13px;
+  pointer-events: auto;
+}
+#background-studio-background-settings.is-open { display: block; }
+.background-studio-settings-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.background-studio-settings-header strong { display: block; font-size: 15px; }
+.background-studio-settings-header small {
+  display: block;
+  max-width: 265px;
+  margin-top: 3px;
+  overflow: hidden;
+  color: #b9c2cc;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.background-studio-settings-header button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  color: #d9dee5;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+.background-studio-settings-header button:hover { background: rgba(255,255,255,.10); }
+.background-studio-settings-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin: 12px 0;
+}
+.background-studio-settings-actions button,
+.background-studio-segmented button {
+  min-height: 32px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 6px;
+  color: #eef2f5;
+  background: rgba(255,255,255,.07);
+  cursor: pointer;
+}
+.background-studio-settings-actions button:hover,
+.background-studio-segmented button:hover { background: rgba(255,255,255,.13); }
+.background-studio-setting-row {
+  display: grid;
+  gap: 7px;
+  margin: 11px 0;
+}
+.background-studio-setting-row > span {
+  display: flex;
+  justify-content: space-between;
+  color: #dce2e8;
+}
+.background-studio-setting-row output { color: #f1c96f; }
+.background-studio-setting-row input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: #d3a84b;
+}
+.background-studio-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.background-studio-segmented button.is-active {
+  color: #fff0b8;
+  border-color: rgba(245, 198, 94, .66);
+  background: rgba(173, 111, 31, .34);
+}
+.background-studio-settings-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 13px;
+}
+.background-studio-settings-inline label { display: flex; align-items: center; gap: 6px; }
+.background-studio-settings-inline input { accent-color: #d3a84b; }
+.background-studio-settings-inline select {
+  height: 30px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 6px;
+  color: #eef2f5;
+  background: #242a32;
+}
+.background-studio-settings-status {
+  min-height: 18px;
+  margin: 12px 0 0;
+  color: #9da8b4;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  #background-studio-background-settings {
+    right: 12px !important;
+    bottom: 12px !important;
+    left: auto !important;
+    top: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #background-studio-media-layer video { display: none; }
+}
+
+/* Current Codex home: remove legacy hero/card/dialog styling and use one flat surface. */
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-brand,
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-signature,
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-ribbon,
+#codex-background-studio-skin-chrome.background-studio-home-shell .background-studio-polaroid {
+  display: none !important;
+}
+.background-studio-home {
+  --thread-content-max-width: min(950px, calc(100cqw - 32px)) !important;
+}
+.background-studio-home > div:first-child {
+  padding-top: 24px !important;
+  min-height: 100% !important;
+}
+.background-studio-home > div:first-child > div:first-child {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  align-items: flex-end !important;
+  padding-bottom: 96px !important;
+}
+.background-studio-home > div:first-child > div:first-child > div:first-child {
+  isolation: auto !important;
+  width: min(100%, var(--thread-content-max-width)) !important;
+  max-width: var(--thread-content-max-width) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 16px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.background-studio-home > div:first-child > div:first-child > div:first-child::before {
+  content: none !important;
+  display: none !important;
+}
+.background-studio-home > div:first-child > div:first-child > div:first-child > div:first-child {
+  height: auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-left: 0 !important;
+}
+.background-studio-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
+  width: 100% !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.background-studio-home [data-feature="game-source"] {
+  max-width: 100% !important;
+  color: #f5f5f4 !important;
+  font-size: 28px !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,.78) !important;
+}
+.background-studio-home [data-feature="game-source"]::after,
+.background-studio-home [data-feature="game-source"] button::before {
+  content: none !important;
+  display: none !important;
+}
+.background-studio-home > div:first-child > div:first-child > div:first-child > div:nth-child(2) {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 100% !important;
+  bottom: auto !important;
+  width: auto !important;
+  margin-top: 18px !important;
+}
+.background-studio-home .group\/home-suggestions button {
+  min-height: 104px !important;
+  padding: 12px !important;
+  border: 1px solid rgba(231, 191, 112, .32) !important;
+  border-radius: 8px !important;
+  background: rgb(25 18 16 / var(--background-studio-panel-alpha, .24)) !important;
+  color: #f4f1eb !important;
+  text-align: left !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+}
+.background-studio-home .group\/home-suggestions button:hover {
+  border-color: rgba(245, 204, 117, .58) !important;
+  background: rgba(99, 48, 28, .38) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.background-studio-home .group\/home-suggestions button > span:first-child {
+  justify-content: flex-start !important;
+}
+.background-studio-home .group\/home-suggestions button > span:first-child > span:first-child {
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+  border-radius: 6px !important;
+  color: #ffe09b !important;
+  background: rgba(154, 74, 38, .50) !important;
+  box-shadow: none !important;
+}
+.background-studio-home .group\/home-suggestions button > span:last-child {
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+.background-studio-home .group\/home-suggestions button svg {
+  width: 18px !important;
+  height: 18px !important;
+  filter: none !important;
+}
+.background-studio-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector) {
+  padding-top: 6px !important;
+  border: 0 !important;
+  border-radius: 8px 8px 0 0 !important;
+  background: linear-gradient(145deg, rgb(49 22 16 / var(--background-studio-composer-alpha, .48)), rgb(21 12 9 / var(--background-studio-composer-alpha, .48))) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.background-studio-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector)::before {
+  content: none !important;
+  display: none !important;
+}
+.background-studio-home .group\/project-selector > button {
+  border-color: rgba(231, 191, 112, .28) !important;
+  background: rgba(255, 255, 255, .06) !important;
+  color: #f4e2b8 !important;
+  box-shadow: none !important;
+}
+.background-studio-home .composer-surface-chrome {
+  border: 0 !important;
+  border-radius: 0 0 8px 8px !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+@media (max-width: 900px) {
+  .background-studio-home [data-feature="game-source"] { font-size: 22px !important; }
+  .background-studio-home .group\/home-suggestions button { min-height: 92px !important; }
+}
+
+/* Suggestion icons drift across Codex versions; use stable text-only cards. */
+.background-studio-home .group\/home-suggestions button > span:first-child {
+  display: none !important;
+}
+.background-studio-home .group\/home-suggestions button {
+  align-items: center !important;
+  justify-content: center !important;
+}
+.background-studio-home .group\/home-suggestions button > span:last-child {
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}

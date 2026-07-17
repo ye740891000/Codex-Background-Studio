@@ -1,0 +1,24 @@
+{
+  "name": "codex-background-studio",
+  "version": "0.1.0",
+  "description": "Install and manage a private, reversible media background for the Codex desktop app.",
+  "author": {
+    "name": "Codex Background Studio Contributors"
+  },
+  "license": "MIT",
+  "keywords": ["codex", "background", "wallpaper", "gif", "video", "desktop"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Background Studio",
+    "shortDescription": "Private image, GIF, and video backgrounds for Codex.",
+    "longDescription": "Install, launch, configure, verify, and uninstall a local Codex media background without modifying the official app bundle, app.asar, signatures, tasks, or authentication data.",
+    "developerName": "Codex Background Studio Contributors",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Install Codex Background Studio on this computer.",
+      "Configure my Codex image, GIF, or video background.",
+      "Uninstall Codex Background Studio without deleting my media settings."
+    ]
+  }
+}

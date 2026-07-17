@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Background Studio"
+  short_description: "Install and manage a private Codex media background"
+  default_prompt: "Use $manage-codex-background to install or configure my Codex background."

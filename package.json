@@ -1,0 +1,16 @@
+{
+  "name": "codex-background-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A reversible local media background for the Codex desktop app.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "validate:assets": "node plugins/codex-background-studio/runtime/injector.mjs --validate-assets",
+    "validate": "npm run validate:assets && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
