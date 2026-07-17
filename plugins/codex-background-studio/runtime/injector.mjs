@@ -245,6 +245,11 @@ async function verifySession(session) {
     const toolbarAnchorCenterDelta = settingsTriggerRect && toolbarAnchorRect
       ? Math.round((settingsTriggerRect.top + settingsTriggerRect.height / 2) - (toolbarAnchorRect.top + toolbarAnchorRect.height / 2))
       : null;
+    const settingsTriggerStyle = settingsTriggerNode ? getComputedStyle(settingsTriggerNode) : null;
+    const settingsTriggerAppRegions = {
+      standard: settingsTriggerStyle?.getPropertyValue('app-region') || null,
+      webkit: settingsTriggerStyle?.getPropertyValue('-webkit-app-region') || null,
+    };
     const result = {
       installed: document.documentElement.classList.contains('codex-background-studio-skin'),
       version: window.__CODEX_BACKGROUND_STUDIO_SKIN_STATE__?.version ?? null,
@@ -266,7 +271,8 @@ async function verifySession(session) {
       loadingIcon,
       settingsTrigger: {
         box: box(settingsTriggerNode),
-        appRegion: settingsTriggerNode ? getComputedStyle(settingsTriggerNode).getPropertyValue('app-region') : null,
+        appRegion: settingsTriggerAppRegions.standard,
+        webkitAppRegion: settingsTriggerAppRegions.webkit,
         nativeControlOverlaps,
         summaryToggle: box(summaryToggleNode),
         summaryGap,
@@ -284,8 +290,9 @@ async function verifySession(session) {
     };
     result.sidebarIconsPass = oversizedSidebarIcons.length === 0 &&
       (!loadingIcon || (loadingIcon.width <= 16 && loadingIcon.height <= 16));
+    result.settingsTriggerAppRegionPass = Object.values(settingsTriggerAppRegions).includes('no-drag');
     result.settingsTriggerPass = Boolean(settingsTriggerNode) && nativeControlOverlaps.length === 0 &&
-      result.settingsTrigger.appRegion === 'no-drag' &&
+      result.settingsTriggerAppRegionPass &&
       (toolbarAnchorNode
         ? toolbarAnchorGap >= 4 && toolbarAnchorGap <= 8 && Math.abs(toolbarAnchorCenterDelta) <= 1
         : settingsTriggerRect.top < 100 && settingsTriggerRect.right > innerWidth - 120);
