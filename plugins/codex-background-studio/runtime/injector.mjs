@@ -202,12 +202,28 @@ async function verifySession(session) {
     const loadingIcon = loadingNode ? { ...layoutBox(loadingNode), rendered: box(loadingNode) } : null;
     const settingsTriggerNode = document.getElementById('background-studio-background-settings-trigger');
     const settingsTriggerRect = settingsTriggerNode?.getBoundingClientRect() ?? null;
+    const summaryToggleNode = [...document.querySelectorAll('button, [role="button"]')].find((node) => {
+      const rect = node.getBoundingClientRect();
+      const labels = [node.getAttribute('aria-label'), node.getAttribute('title')].filter(Boolean);
+      return rect.width > 0 && rect.height > 0 && labels.some((label) => /^(切换摘要|toggle summary)$/i.test(label.trim()));
+    });
+    const summaryToggleRect = summaryToggleNode?.getBoundingClientRect() ?? null;
     const overlaps = (a, b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-    const nativeControlOverlaps = sidebar && settingsTriggerRect
-      ? [...sidebar.querySelectorAll('button, a, [role="button"]')]
-        .filter((node) => node !== settingsTriggerNode && overlaps(settingsTriggerRect, node.getBoundingClientRect()))
+    const nativeControlOverlaps = settingsTriggerRect
+      ? [...document.querySelectorAll('button, a, [role="button"]')]
+        .filter((node) => {
+          if (node === settingsTriggerNode || !overlaps(settingsTriggerRect, node.getBoundingClientRect())) return false;
+          const style = getComputedStyle(node);
+          return style.pointerEvents !== 'none' && style.visibility !== 'hidden' && style.display !== 'none';
+        })
         .map((node) => node.getAttribute('aria-label') || node.getAttribute('title') || node.textContent?.trim().slice(0, 40) || node.tagName)
       : [];
+    const summaryGap = settingsTriggerRect && summaryToggleRect
+      ? Math.round(summaryToggleRect.left - settingsTriggerRect.right)
+      : null;
+    const summaryCenterDelta = settingsTriggerRect && summaryToggleRect
+      ? Math.round((settingsTriggerRect.top + settingsTriggerRect.height / 2) - (summaryToggleRect.top + summaryToggleRect.height / 2))
+      : null;
     const result = {
       installed: document.documentElement.classList.contains('codex-background-studio-skin'),
       version: window.__CODEX_BACKGROUND_STUDIO_SKIN_STATE__?.version ?? null,
@@ -230,6 +246,9 @@ async function verifySession(session) {
       settingsTrigger: {
         box: box(settingsTriggerNode),
         nativeControlOverlaps,
+        summaryToggle: box(summaryToggleNode),
+        summaryGap,
+        summaryCenterDelta,
       },
       viewport: { width: innerWidth, height: innerHeight },
       documentOverflow: {
@@ -239,7 +258,8 @@ async function verifySession(session) {
     };
     result.sidebarIconsPass = oversizedSidebarIcons.length === 0 &&
       (!loadingIcon || (loadingIcon.width <= 16 && loadingIcon.height <= 16));
-    result.settingsTriggerPass = Boolean(settingsTriggerNode) && nativeControlOverlaps.length === 0;
+    result.settingsTriggerPass = Boolean(settingsTriggerNode) && nativeControlOverlaps.length === 0 &&
+      (!summaryToggleNode || (summaryGap >= 4 && summaryGap <= 8 && Math.abs(summaryCenterDelta) <= 1));
     result.pass = result.installed && result.stylePresent && result.chromePresent &&
       result.chromePointerEvents === 'none' && Boolean(result.composer) && Boolean(result.sidebar) &&
       result.sidebarIconsPass && result.settingsTriggerPass &&

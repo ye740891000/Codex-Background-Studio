@@ -31,7 +31,15 @@ chmod +x install.command launch.command uninstall.command
 ./launch.command
 ```
 
-安装后也可以从 `~/Applications/Codex Background Studio.command` 启动。
+安装后可以从 `~/Applications/Codex Background Studio.app` 启动；同目录下的 `Codex Background Studio.command` 是可见终端输出的备用入口。
+
+这里的 `~/Applications` 是当前用户目录下的“应用程序”文件夹，不是系统级 `/Applications`。可以在 Finder 中选择 **前往 > 个人**，再打开“Applications”，或在终端执行：
+
+```bash
+open ~/Applications
+```
+
+如果启动器提示 Codex 已经打开，请保持启动器终端窗口运行，用 `Command+Q` 完全退出 ChatGPT/Codex，并等待启动器自动重新打开应用。不要手动点击图标重开，否则新实例不会携带 Background Studio 调试端口。`Codex Background Studio.app` 会打开这个终端启动流程，并使用项目内置图标显示在 Finder 中。
 
 ### Linux
 

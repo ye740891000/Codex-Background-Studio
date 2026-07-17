@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { matchingAppProcesses, waitForInitialAppExit } from "./process-lifecycle.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pluginRoot = path.resolve(here, "..");
@@ -130,6 +131,7 @@ function processList() {
     const parsed = JSON.parse(output);
     return (Array.isArray(parsed) ? parsed : [parsed]).map((item) => ({
       pid: Number(item.ProcessId),
+      executable: item.ExecutablePath || "",
       command: `${item.ExecutablePath || ""} ${item.CommandLine || ""}`,
     }));
   }
@@ -140,19 +142,27 @@ function processList() {
 }
 
 function appIsRunning(app) {
-  const needle = app.launchKind === "mac-bundle" ? path.basename(app.executable, ".app") : path.basename(app.executable);
-  return processList().some((item) => item.pid !== process.pid && item.command.toLowerCase().includes(needle.toLowerCase()));
+  return matchingAppProcesses(app, processList()).some((item) => item.pid !== process.pid);
 }
 
 async function waitForNormalExit(app) {
-  if (!appIsRunning(app)) return;
-  console.log("Codex is already open without the Background Studio port. Quit Codex normally; launch is queued.");
-  const deadline = Date.now() + WAIT_FOR_EXIT_MS;
-  while (Date.now() < deadline) {
-    if (!appIsRunning(app)) return;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    const result = await waitForInitialAppExit(app, {
+      listProcesses: processList,
+      sleep: (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
+      timeoutMs: WAIT_FOR_EXIT_MS,
+      onWait: () => console.log("Codex is already open without the Background Studio port. Quit Codex normally and do not reopen it; launch will continue automatically."),
+    });
+    if (result.waited && appIsRunning(app)) {
+      throw new Error("Codex was reopened without the Background Studio port before the queued launch could start. Quit it and run the launcher again; do not reopen Codex manually.");
+    }
+    return result;
+  } catch (error) {
+    if (error.message.startsWith("Timed out waiting for app process IDs")) {
+      throw new Error("Timed out waiting for Codex to exit normally");
+    }
+    throw error;
   }
-  throw new Error("Timed out waiting for Codex to exit normally");
 }
 
 function launchCodex(app, port) {
@@ -219,11 +229,43 @@ async function writeUnixLaunchers(root) {
 
   if (process.platform === "darwin") {
     const applications = path.join(os.homedir(), "Applications");
+    const launchEntry = path.join(applications, "Codex Background Studio.command");
+    const appEntry = path.join(applications, "Codex Background Studio.app");
+    const appContents = path.join(appEntry, "Contents");
+    const appExecutable = path.join(appContents, "MacOS", "CodexBackgroundStudio");
+    const appResources = path.join(appContents, "Resources");
+    const uninstallEntry = path.join(applications, "Uninstall Codex Background Studio.command");
     await fs.mkdir(applications, { recursive: true });
-    await fs.copyFile(path.join(root, "launch.sh"), path.join(applications, "Codex Background Studio.command"));
-    await fs.copyFile(path.join(root, "uninstall.sh"), path.join(applications, "Uninstall Codex Background Studio.command"));
-    await fs.chmod(path.join(applications, "Codex Background Studio.command"), 0o755);
-    await fs.chmod(path.join(applications, "Uninstall Codex Background Studio.command"), 0o755);
+    await fs.copyFile(path.join(root, "launch.sh"), launchEntry);
+    await fs.copyFile(path.join(root, "uninstall.sh"), uninstallEntry);
+    await fs.chmod(launchEntry, 0o755);
+    await fs.chmod(uninstallEntry, 0o755);
+    await fs.rm(appEntry, { recursive: true, force: true });
+    await fs.mkdir(path.dirname(appExecutable), { recursive: true });
+    await fs.mkdir(appResources, { recursive: true });
+    await fs.writeFile(appExecutable, `#!/bin/sh\nexec /usr/bin/open ${shellQuote(launchEntry)}\n`, "utf8");
+    await fs.chmod(appExecutable, 0o755);
+    await fs.copyFile(path.join(root, "runtime", "assets", "app-icon.icns"), path.join(appResources, "AppIcon.icns"));
+    await fs.writeFile(path.join(appContents, "Info.plist"), `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key><string>Codex Background Studio</string>
+  <key>CFBundleExecutable</key><string>CodexBackgroundStudio</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
+  <key>CFBundleIdentifier</key><string>com.local.CodexBackgroundStudio</string>
+  <key>CFBundleName</key><string>Codex Background Studio</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>0.1.0</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>LSMinimumSystemVersion</key><string>12.0</string>
+  <key>LSUIElement</key><true/>
+</dict>
+</plist>
+`, "utf8");
+    const signature = spawnSync("/usr/bin/codesign", ["--force", "--deep", "--sign", "-", appEntry], { encoding: "utf8" });
+    if (signature.status !== 0) throw new Error(`macOS launcher signing failed: ${signature.stderr || signature.stdout}`);
+    return { appEntry, launchEntry, uninstallEntry };
   }
 
   if (process.platform === "linux") {
@@ -239,10 +281,12 @@ async function writeUnixLaunchers(root) {
       "",
     ].join("\n"), "utf8");
   }
+  return null;
 }
 
 async function removeUnixLaunchers() {
   if (process.platform === "darwin") {
+    await fs.rm(path.join(os.homedir(), "Applications", "Codex Background Studio.app"), { recursive: true, force: true });
     await fs.rm(path.join(os.homedir(), "Applications", "Codex Background Studio.command"), { force: true });
     await fs.rm(path.join(os.homedir(), "Applications", "Uninstall Codex Background Studio.command"), { force: true });
   }
@@ -269,6 +313,7 @@ async function install() {
   await fs.cp(sourceRuntime, path.join(root, "runtime"), { recursive: true });
   await fs.mkdir(path.join(root, "scripts"), { recursive: true });
   await fs.copyFile(fileURLToPath(import.meta.url), path.join(root, "scripts", "studio-cli.mjs"));
+  await fs.copyFile(path.join(here, "process-lifecycle.mjs"), path.join(root, "scripts", "process-lifecycle.mjs"));
   const shortcutHelper = path.join(pluginRoot, "scripts", "windows-shortcuts.ps1");
   if (await exists(shortcutHelper)) await fs.copyFile(shortcutHelper, path.join(root, "scripts", "windows-shortcuts.ps1"));
   await writeJson(path.join(root, "installation.json"), {
@@ -277,11 +322,14 @@ async function install() {
     installedAt: new Date().toISOString(),
     platform: process.platform,
   });
+  let integration = null;
   if (process.env.CBS_SKIP_INTEGRATION !== "1") {
     if (process.platform === "win32") runWindowsShortcutHelper("install", root);
-    else await writeUnixLaunchers(root);
+    else integration = await writeUnixLaunchers(root);
   }
   console.log(`Installed Codex Background Studio to ${root}`);
+  if (integration?.appEntry) console.log(`macOS app launcher: ${integration.appEntry}`);
+  if (integration?.launchEntry) console.log(`macOS command launcher: ${integration.launchEntry}`);
 }
 
 async function launch(port) {
