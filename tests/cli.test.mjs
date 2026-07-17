@@ -66,6 +66,12 @@ test("isolated install and uninstall do not touch desktop integration", () => {
   }
 });
 
+test("verification waits for the Codex renderer to finish mounting", () => {
+  const injectorSource = fs.readFileSync(injector, "utf8");
+  assert.match(injectorSource, /options\.mode === "verify"/);
+  assert.match(injectorSource, /waitForVerifiedSession\(session, options\.timeoutMs\)/);
+});
+
 test("macOS app launcher closes only its successful Terminal tab", async () => {
   const { buildMacAutoCloseLauncher } = await import(pathToFileURL(macosLauncher));
   const script = buildMacAutoCloseLauncher("/opt/homebrew/bin/node", "/Users/test/Library/Application Support/CodexBackgroundStudio/scripts/studio-cli.mjs");

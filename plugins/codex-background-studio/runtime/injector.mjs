@@ -356,7 +356,7 @@ async function runOneShot(options) {
       }
       const verified = options.mode === "remove" || options.mode === "purge"
         ? await session.evaluate("!document.documentElement.classList.contains('codex-background-studio-skin')")
-        : (options.reload || options.mode === "once")
+        : (options.reload || options.mode === "once" || options.mode === "verify")
           ? await waitForVerifiedSession(session, options.timeoutMs)
           : await verifySession(session);
       results.push({ targetId: target.id, title: target.title, url: target.url, result: verified });
