@@ -326,72 +326,59 @@
     refreshMediaLabel();
   };
 
-  const findSummaryToggle = () => [...document.querySelectorAll('button, [role="button"]')].find((node) => {
-    const box = node.getBoundingClientRect();
-    if (box.width <= 0 || box.height <= 0) return false;
-    const labels = [node.getAttribute("aria-label"), node.getAttribute("title")].filter(Boolean);
-    return labels.some((label) => /^(切换摘要|toggle summary)$/i.test(label.trim()));
-  });
+  const findToolbarButton = (acceptedLabels) => {
+    const normalizedLabels = acceptedLabels.map((label) => label.toLowerCase());
+    return [...document.querySelectorAll('button, [role="button"]')]
+      .filter((node) => {
+        const box = node.getBoundingClientRect();
+        if (box.width <= 0 || box.height <= 0 || box.right <= 0 || box.left >= innerWidth || box.top < 0 || box.top >= 100) return false;
+        const labels = [node.getAttribute("aria-label"), node.getAttribute("title")].filter(Boolean);
+        return labels.some((label) => normalizedLabels.includes(label.trim().toLowerCase()));
+      })
+      .sort((left, right) => right.getBoundingClientRect().right - left.getBoundingClientRect().right)[0] || null;
+  };
+
+  const findSummaryToggle = () => findToolbarButton([
+    "切换摘要", "切换置顶摘要", "切换指定摘要",
+    "toggle summary", "toggle pinned summary", "toggle selected summary",
+  ]);
+  const findSidebarToggle = () => findToolbarButton([
+    "显示/隐藏侧边栏", "show/hide sidebar", "toggle sidebar",
+  ]);
 
   const positionControls = () => {
     const trigger = document.getElementById(TRIGGER_ID);
     const panel = document.getElementById(PANEL_ID);
     if (!trigger || !panel) return;
     const summaryToggle = findSummaryToggle();
-    const summaryBox = summaryToggle?.getBoundingClientRect();
-    if (summaryBox) {
+    const toolbarAnchor = summaryToggle || findSidebarToggle();
+    const anchorBox = toolbarAnchor?.getBoundingClientRect();
+    if (anchorBox) {
       const triggerBox = trigger.getBoundingClientRect();
       const size = triggerBox.width || 28;
-      const x = Math.max(8, Math.round(summaryBox.left - size - 6));
-      const y = Math.round(summaryBox.top + (summaryBox.height - size) / 2);
-      const panelTop = Math.round(summaryBox.bottom + 8);
+      const x = Math.max(8, Math.round(anchorBox.left - size - 6));
+      const y = Math.round(anchorBox.top + (anchorBox.height - size) / 2);
+      const panelTop = Math.round(anchorBox.bottom + 8);
       trigger.style.left = `${x}px`;
       trigger.style.right = "auto";
       trigger.style.top = `${y}px`;
       trigger.style.bottom = "auto";
       panel.style.left = "auto";
-      panel.style.right = `${Math.max(12, Math.round(innerWidth - summaryBox.right))}px`;
+      panel.style.right = `${Math.max(12, Math.round(innerWidth - anchorBox.right))}px`;
       panel.style.top = `${panelTop}px`;
       panel.style.bottom = "auto";
       panel.style.maxHeight = `${Math.max(160, innerHeight - panelTop - 12)}px`;
       return;
     }
-    const aside = document.querySelector("aside.app-shell-left-panel");
-    const box = aside?.getBoundingClientRect();
-    if (box && box.width >= 160) {
-      const size = trigger.getBoundingClientRect().width || 28;
-      const clearance = 4;
-      const x = Math.round(box.right - size - 8);
-      const controls = [...aside.querySelectorAll('button, a, [role="button"]')]
-        .filter((node) => node !== trigger)
-        .map((node) => node.getBoundingClientRect())
-        .filter((rect) => rect.width > 0 && rect.height > 0);
-      const collides = (y) => controls.some((rect) =>
-        x < rect.right + clearance && x + size > rect.left - clearance &&
-        y < rect.bottom + clearance && y + size > rect.top - clearance);
-      let y = Math.round(box.bottom - size - 50);
-      while (y >= box.top + 8 && collides(y)) y -= size + 8;
-      if (y < box.top + 8) y = Math.round(box.top + 8);
-      trigger.style.left = `${x}px`;
-      trigger.style.right = "auto";
-      trigger.style.top = `${y}px`;
-      trigger.style.bottom = "auto";
-      panel.style.left = `${Math.min(innerWidth - 364, Math.round(box.right + 12))}px`;
-      panel.style.right = "auto";
-      panel.style.bottom = "12px";
-      panel.style.top = "auto";
-      panel.style.maxHeight = "";
-    } else {
-      trigger.style.left = "auto";
-      trigger.style.right = "76px";
-      trigger.style.top = "42px";
-      trigger.style.bottom = "auto";
-      panel.style.left = "auto";
-      panel.style.right = "12px";
-      panel.style.top = "82px";
-      panel.style.bottom = "auto";
-      panel.style.maxHeight = "";
-    }
+    trigger.style.left = "auto";
+    trigger.style.right = "76px";
+    trigger.style.top = "42px";
+    trigger.style.bottom = "auto";
+    panel.style.left = "auto";
+    panel.style.right = "12px";
+    panel.style.top = "82px";
+    panel.style.bottom = "auto";
+    panel.style.maxHeight = "";
   };
 
   const ensureSettingsControl = () => {

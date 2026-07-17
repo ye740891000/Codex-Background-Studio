@@ -202,12 +202,27 @@ async function verifySession(session) {
     const loadingIcon = loadingNode ? { ...layoutBox(loadingNode), rendered: box(loadingNode) } : null;
     const settingsTriggerNode = document.getElementById('background-studio-background-settings-trigger');
     const settingsTriggerRect = settingsTriggerNode?.getBoundingClientRect() ?? null;
-    const summaryToggleNode = [...document.querySelectorAll('button, [role="button"]')].find((node) => {
-      const rect = node.getBoundingClientRect();
-      const labels = [node.getAttribute('aria-label'), node.getAttribute('title')].filter(Boolean);
-      return rect.width > 0 && rect.height > 0 && labels.some((label) => /^(切换摘要|toggle summary)$/i.test(label.trim()));
-    });
+    const findToolbarButton = (acceptedLabels) => {
+      const normalizedLabels = acceptedLabels.map((label) => label.toLowerCase());
+      return [...document.querySelectorAll('button, [role="button"]')]
+        .filter((node) => {
+          const rect = node.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0 || rect.right <= 0 || rect.left >= innerWidth || rect.top < 0 || rect.top >= 100) return false;
+          const labels = [node.getAttribute('aria-label'), node.getAttribute('title')].filter(Boolean);
+          return labels.some((label) => normalizedLabels.includes(label.trim().toLowerCase()));
+        })
+        .sort((left, right) => right.getBoundingClientRect().right - left.getBoundingClientRect().right)[0] || null;
+    };
+    const summaryToggleNode = findToolbarButton([
+      '切换摘要', '切换置顶摘要', '切换指定摘要',
+      'toggle summary', 'toggle pinned summary', 'toggle selected summary',
+    ]);
     const summaryToggleRect = summaryToggleNode?.getBoundingClientRect() ?? null;
+    const sidebarToggleNode = findToolbarButton([
+      '显示/隐藏侧边栏', 'show/hide sidebar', 'toggle sidebar',
+    ]);
+    const toolbarAnchorNode = summaryToggleNode || sidebarToggleNode;
+    const toolbarAnchorRect = toolbarAnchorNode?.getBoundingClientRect() ?? null;
     const overlaps = (a, b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
     const nativeControlOverlaps = settingsTriggerRect
       ? [...document.querySelectorAll('button, a, [role="button"]')]
@@ -223,6 +238,12 @@ async function verifySession(session) {
       : null;
     const summaryCenterDelta = settingsTriggerRect && summaryToggleRect
       ? Math.round((settingsTriggerRect.top + settingsTriggerRect.height / 2) - (summaryToggleRect.top + summaryToggleRect.height / 2))
+      : null;
+    const toolbarAnchorGap = settingsTriggerRect && toolbarAnchorRect
+      ? Math.round(toolbarAnchorRect.left - settingsTriggerRect.right)
+      : null;
+    const toolbarAnchorCenterDelta = settingsTriggerRect && toolbarAnchorRect
+      ? Math.round((settingsTriggerRect.top + settingsTriggerRect.height / 2) - (toolbarAnchorRect.top + toolbarAnchorRect.height / 2))
       : null;
     const result = {
       installed: document.documentElement.classList.contains('codex-background-studio-skin'),
@@ -249,6 +270,10 @@ async function verifySession(session) {
         summaryToggle: box(summaryToggleNode),
         summaryGap,
         summaryCenterDelta,
+        toolbarAnchor: box(toolbarAnchorNode),
+        toolbarAnchorKind: summaryToggleNode ? 'summary' : sidebarToggleNode ? 'sidebar' : 'fixed',
+        toolbarAnchorGap,
+        toolbarAnchorCenterDelta,
       },
       viewport: { width: innerWidth, height: innerHeight },
       documentOverflow: {
@@ -259,7 +284,9 @@ async function verifySession(session) {
     result.sidebarIconsPass = oversizedSidebarIcons.length === 0 &&
       (!loadingIcon || (loadingIcon.width <= 16 && loadingIcon.height <= 16));
     result.settingsTriggerPass = Boolean(settingsTriggerNode) && nativeControlOverlaps.length === 0 &&
-      (!summaryToggleNode || (summaryGap >= 4 && summaryGap <= 8 && Math.abs(summaryCenterDelta) <= 1));
+      (toolbarAnchorNode
+        ? toolbarAnchorGap >= 4 && toolbarAnchorGap <= 8 && Math.abs(toolbarAnchorCenterDelta) <= 1
+        : settingsTriggerRect.top < 100 && settingsTriggerRect.right > innerWidth - 120);
     result.pass = result.installed && result.stylePresent && result.chromePresent &&
       result.chromePointerEvents === 'none' && Boolean(result.composer) && Boolean(result.sidebar) &&
       result.sidebarIconsPass && result.settingsTriggerPass &&
