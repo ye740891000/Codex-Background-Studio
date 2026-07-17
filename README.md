@@ -2,7 +2,7 @@
 
 一个干净、可逆、本地优先的 Codex 桌面背景扩展。支持图片、GIF、MP4、WebM，以及透明度、遮罩、模糊、裁切、焦点、循环和播放速度设置。
 
-它不会修改 Codex 官方程序、`app.asar`、签名、配置、任务或登录信息。运行时仅通过绑定到 `127.0.0.1` 的 Chromium DevTools Protocol 添加可移除的视觉层。
+它不会修改 Codex 官方程序、`app.asar`、签名、配置、任务或登录信息。运行时仅通过 IPv4/IPv6 loopback（`127.0.0.1`、`[::1]` 或 `localhost`）上的 Chromium DevTools Protocol 添加可移除的视觉层。
 
 ## 快速使用
 
@@ -10,9 +10,11 @@
 
 ### Windows
 
-1. 双击 `install.cmd`。
-2. 正常退出当前 Codex。
-3. 双击桌面的 **Codex Background Studio**。
+1. 在 GitHub 仓库页面选择 **Code > Download ZIP**。
+2. 解压 ZIP，进入解压后的 `Codex-Background-Studio` 文件夹（不要直接在压缩包预览中运行）。
+3. 双击 `install.cmd`，安装器会在桌面和开始菜单创建启动、卸载快捷方式。
+4. 正常退出当前 Codex。
+5. 双击桌面的 **Codex Background Studio**，以后也始终从这个快捷方式打开。
 
 也可以在 PowerShell 中运行：
 
@@ -70,6 +72,7 @@ CODEX_EXECUTABLE=/path/to/official-codex ./launch.sh
 - 建议卡片使用稳定的纯文字布局，规避 Codex 版本变化造成的图标错位
 - 清除对话输入框四周、任务状态条下方的割裂阴影，并保留底部间距
 - 保留原生交互、可访问性标签和任务数据，不替换官方业务逻辑
+- 背景按钮会动态避让侧栏中的更新、帮助、个人资料等原生可点击控件
 
 ## 卸载
 
@@ -108,7 +111,7 @@ codex plugin add codex-background-studio@personal
 
 ## 安全边界
 
-- CDP 只绑定 `127.0.0.1`，不得代理或暴露到局域网。
+- CDP 只使用 IPv4/IPv6 loopback，不得代理或暴露到局域网。
 - 已打开但没有调试端口的 Codex 不会被强制关闭；启动器等待用户正常退出。
 - 卸载器会校验 PID 对应的命令行，只停止本项目注入器。
 - 官方应用、签名、任务、认证和配置保持不变。

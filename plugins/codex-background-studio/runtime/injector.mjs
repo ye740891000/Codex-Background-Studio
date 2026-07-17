@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = here;
+const LOOPBACK_HOSTS = ["127.0.0.1", "[::1]", "localhost"];
 
 function parseArgs(argv) {
   const options = { port: 9335, mode: "watch", timeoutMs: 30000, screenshot: null, reload: false };
@@ -105,18 +106,20 @@ async function waitForTargets(port, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   let lastError;
   while (Date.now() < deadline) {
-    try {
-      const response = await fetch(`http://127.0.0.1:${port}/json/list`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const targets = await response.json();
-      const pages = targets.filter((item) => item.type === "page" && item.url.startsWith("app://"));
-      if (pages.length) return pages;
-    } catch (error) {
-      lastError = error;
+    for (const host of LOOPBACK_HOSTS) {
+      try {
+        const response = await fetch(`http://${host}:${port}/json/list`, { signal: AbortSignal.timeout(1200) });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const targets = await response.json();
+        const pages = targets.filter((item) => item.type === "page" && item.url.startsWith("app://"));
+        if (pages.length) return pages;
+      } catch (error) {
+        lastError = error;
+      }
     }
     await new Promise((resolve) => setTimeout(resolve, 350));
   }
-  throw new Error(`No Codex renderer target on 127.0.0.1:${port}: ${lastError?.message ?? "timed out"}`);
+  throw new Error(`No Codex renderer target on the loopback port ${port}: ${lastError?.message ?? "timed out"}`);
 }
 
 async function loadPayload() {
@@ -175,13 +178,36 @@ async function verifySession(session) {
       const r = node.getBoundingClientRect();
       return { x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) };
     };
+    const layoutBox = (node) => {
+      if (!node) return null;
+      const style = getComputedStyle(node);
+      const extraWidth = style.boxSizing === 'content-box'
+        ? parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth)
+        : 0;
+      const extraHeight = style.boxSizing === 'content-box'
+        ? parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth)
+        : 0;
+      return {
+        width: Math.round(parseFloat(style.width) + extraWidth),
+        height: Math.round(parseFloat(style.height) + extraHeight),
+      };
+    };
     const home = document.querySelector('.background-studio-home');
     const suggestions = home?.querySelector('.group\\\\/home-suggestions') ?? null;
     const cards = suggestions ? [...suggestions.querySelectorAll('button')].map(box) : [];
     const sidebar = document.querySelector('aside.app-shell-left-panel');
-    const sidebarIcons = sidebar ? [...sidebar.querySelectorAll('svg')].map(box).filter((item) => item.width > 0 && item.height > 0) : [];
+    const sidebarIcons = sidebar ? [...sidebar.querySelectorAll('svg')].map(layoutBox).filter((item) => item.width > 0 && item.height > 0) : [];
     const oversizedSidebarIcons = sidebarIcons.filter((item) => item.width > 20 || item.height > 20);
-    const loadingIcon = box(sidebar?.querySelector('[data-app-action-sidebar-thread-row] .animate-spin'));
+    const loadingNode = sidebar?.querySelector('[data-app-action-sidebar-thread-row] .animate-spin');
+    const loadingIcon = loadingNode ? { ...layoutBox(loadingNode), rendered: box(loadingNode) } : null;
+    const settingsTriggerNode = document.getElementById('background-studio-background-settings-trigger');
+    const settingsTriggerRect = settingsTriggerNode?.getBoundingClientRect() ?? null;
+    const overlaps = (a, b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    const nativeControlOverlaps = sidebar && settingsTriggerRect
+      ? [...sidebar.querySelectorAll('button, a, [role="button"]')]
+        .filter((node) => node !== settingsTriggerNode && overlaps(settingsTriggerRect, node.getBoundingClientRect()))
+        .map((node) => node.getAttribute('aria-label') || node.getAttribute('title') || node.textContent?.trim().slice(0, 40) || node.tagName)
+      : [];
     const result = {
       installed: document.documentElement.classList.contains('codex-background-studio-skin'),
       version: window.__CODEX_BACKGROUND_STUDIO_SKIN_STATE__?.version ?? null,
@@ -201,6 +227,10 @@ async function verifySession(session) {
         oversized: oversizedSidebarIcons,
       },
       loadingIcon,
+      settingsTrigger: {
+        box: box(settingsTriggerNode),
+        nativeControlOverlaps,
+      },
       viewport: { width: innerWidth, height: innerHeight },
       documentOverflow: {
         x: document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -209,8 +239,10 @@ async function verifySession(session) {
     };
     result.sidebarIconsPass = oversizedSidebarIcons.length === 0 &&
       (!loadingIcon || (loadingIcon.width <= 16 && loadingIcon.height <= 16));
+    result.settingsTriggerPass = Boolean(settingsTriggerNode) && nativeControlOverlaps.length === 0;
     result.pass = result.installed && result.stylePresent && result.chromePresent &&
-      result.chromePointerEvents === 'none' && Boolean(result.composer) && Boolean(result.sidebar) && result.sidebarIconsPass &&
+      result.chromePointerEvents === 'none' && Boolean(result.composer) && Boolean(result.sidebar) &&
+      result.sidebarIconsPass && result.settingsTriggerPass &&
       (!result.homePresent || (Boolean(result.hero) &&
         (!result.suggestionsPresent || (result.cards.length >= 2 && result.cards.length <= 4))));
     return result;

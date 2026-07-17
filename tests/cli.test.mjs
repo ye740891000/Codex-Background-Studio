@@ -24,11 +24,14 @@ test("runtime assets build a renderer payload", () => {
 test("runtime uses an isolated project namespace and bundled PNG", () => {
   const runtimeSource = [
     fs.readFileSync(injector, "utf8"),
+    fs.readFileSync(cli, "utf8"),
     fs.readFileSync(renderer, "utf8"),
     fs.readFileSync(stylesheet, "utf8"),
   ].join("\n");
   assert.match(runtimeSource, /codex-background-studio-settings-v1/);
   assert.match(runtimeSource, /codex-background-studio-skin/);
+  assert.match(runtimeSource, /\[::1\]/);
+  assert.match(runtimeSource, /127\.0\.0\.1/);
 
   const image = fs.readFileSync(defaultBackground);
   assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);

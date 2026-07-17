@@ -33,7 +33,7 @@ Pass `--port <1024-65535>` when port `9335` is occupied. Set `CODEX_EXECUTABLE` 
 
 ## Guardrails
 
-- Keep CDP bound to `127.0.0.1`; never expose or proxy it.
+- Keep CDP on IPv4/IPv6 loopback only; never expose or proxy it.
 - Do not modify Codex, its package signature, `app.asar`, config, tasks, authentication, or plugins.
 - Keep all selected media local. Do not upload or resolve remote media URLs.
 - Stop if the discovered executable is not the official Codex desktop app.

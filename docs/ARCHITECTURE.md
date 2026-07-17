@@ -5,7 +5,7 @@
 ```text
 official Codex desktop app
         |
-        | 127.0.0.1 CDP only
+        | IPv4/IPv6 loopback CDP only
         v
 runtime/injector.mjs
         |
@@ -30,7 +30,7 @@ The installer copies only this project's runtime and CLI. It does not write into
 
 1. Discover the official Codex desktop executable or use `CODEX_EXECUTABLE`.
 2. If Codex is already running without the selected port, wait for a normal user exit.
-3. Launch Codex with `--remote-debugging-address=127.0.0.1` and the selected port.
+3. Request `--remote-debugging-address=127.0.0.1`, then discover the renderer on IPv4 or IPv6 loopback.
 4. Start a detached Node injector and record its PID and expected path.
 5. Reapply the renderer layer after page loads and in-app navigation.
 6. On uninstall, validate the recorded process command before stopping it.

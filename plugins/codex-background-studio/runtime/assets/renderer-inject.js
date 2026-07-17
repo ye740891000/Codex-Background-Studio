@@ -333,10 +333,23 @@
     const aside = document.querySelector("aside.app-shell-left-panel");
     const box = aside?.getBoundingClientRect();
     if (box && box.width >= 160) {
-      trigger.style.left = `${Math.round(box.right - 70)}px`;
+      const size = 32;
+      const clearance = 4;
+      const x = Math.round(box.right - size - 8);
+      const controls = [...aside.querySelectorAll('button, a, [role="button"]')]
+        .filter((node) => node !== trigger)
+        .map((node) => node.getBoundingClientRect())
+        .filter((rect) => rect.width > 0 && rect.height > 0);
+      const collides = (y) => controls.some((rect) =>
+        x < rect.right + clearance && x + size > rect.left - clearance &&
+        y < rect.bottom + clearance && y + size > rect.top - clearance);
+      let y = Math.round(box.bottom - size - 50);
+      while (y >= box.top + 8 && collides(y)) y -= size + 8;
+      if (y < box.top + 8) y = Math.round(box.top + 8);
+      trigger.style.left = `${x}px`;
       trigger.style.right = "auto";
-      trigger.style.top = "auto";
-      trigger.style.bottom = "10px";
+      trigger.style.top = `${y}px`;
+      trigger.style.bottom = "auto";
       panel.style.left = `${Math.min(innerWidth - 364, Math.round(box.right + 12))}px`;
       panel.style.right = "auto";
       panel.style.bottom = "12px";

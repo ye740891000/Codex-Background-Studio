@@ -10,6 +10,7 @@ const pluginRoot = path.resolve(here, "..");
 const sourceRuntime = path.join(pluginRoot, "runtime");
 const DEFAULT_PORT = 9335;
 const WAIT_FOR_EXIT_MS = 10 * 60 * 1000;
+const LOOPBACK_HOSTS = ["127.0.0.1", "[::1]", "localhost"];
 
 function dataRoot() {
   if (process.env.CBS_HOME) return path.resolve(process.env.CBS_HOME);
@@ -62,13 +63,15 @@ function commandOutput(command, args) {
 }
 
 async function getTargets(port) {
-  try {
-    const response = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(1200) });
-    if (!response.ok) return [];
-    return (await response.json()).filter((target) => target.type === "page" && target.url.startsWith("app://"));
-  } catch {
-    return [];
+  for (const host of LOOPBACK_HOSTS) {
+    try {
+      const response = await fetch(`http://${host}:${port}/json/list`, { signal: AbortSignal.timeout(1200) });
+      if (!response.ok) continue;
+      const targets = (await response.json()).filter((target) => target.type === "page" && target.url.startsWith("app://"));
+      if (targets.length) return targets;
+    } catch {}
   }
+  return [];
 }
 
 async function waitForTargets(port, timeoutMs = 30000) {
@@ -78,7 +81,7 @@ async function waitForTargets(port, timeoutMs = 30000) {
     if (targets.length) return targets;
     await new Promise((resolve) => setTimeout(resolve, 400));
   }
-  throw new Error(`Codex did not expose a loopback CDP target on port ${port}`);
+  throw new Error(`Codex did not expose an IPv4 or IPv6 loopback CDP target on port ${port}`);
 }
 
 async function discoverCodex() {
@@ -295,7 +298,7 @@ async function launch(port) {
   await new Promise((resolve) => setTimeout(resolve, 900));
   const result = spawnSync(process.execPath, [path.join(root, "runtime", "injector.mjs"), "--verify", "--port", String(port)], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(`Injection verification failed: ${result.stderr || result.stdout}`);
-  console.log(`Codex Background Studio is active on 127.0.0.1:${port} (injector PID ${pid})`);
+  console.log(`Codex Background Studio is active on loopback port ${port} (injector PID ${pid})`);
 }
 
 async function verify(port) {
