@@ -266,6 +266,7 @@ async function verifySession(session) {
       loadingIcon,
       settingsTrigger: {
         box: box(settingsTriggerNode),
+        appRegion: settingsTriggerNode ? getComputedStyle(settingsTriggerNode).getPropertyValue('app-region') : null,
         nativeControlOverlaps,
         summaryToggle: box(summaryToggleNode),
         summaryGap,
@@ -284,6 +285,7 @@ async function verifySession(session) {
     result.sidebarIconsPass = oversizedSidebarIcons.length === 0 &&
       (!loadingIcon || (loadingIcon.width <= 16 && loadingIcon.height <= 16));
     result.settingsTriggerPass = Boolean(settingsTriggerNode) && nativeControlOverlaps.length === 0 &&
+      result.settingsTrigger.appRegion === 'no-drag' &&
       (toolbarAnchorNode
         ? toolbarAnchorGap >= 4 && toolbarAnchorGap <= 8 && Math.abs(toolbarAnchorCenterDelta) <= 1
         : settingsTriggerRect.top < 100 && settingsTriggerRect.right > innerWidth - 120);

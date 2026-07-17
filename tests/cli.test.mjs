@@ -38,6 +38,7 @@ test("runtime uses an isolated project namespace and bundled PNG", () => {
   assert.match(runtimeSource, /切换指定摘要/);
   assert.match(runtimeSource, /toggle pinned summary/);
   assert.match(runtimeSource, /显示\/隐藏侧边栏/);
+  assert.match(runtimeSource, /app-region:\s*no-drag/);
 
   const image = fs.readFileSync(defaultBackground);
   assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);

@@ -761,6 +761,8 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
 #background-studio-background-settings-trigger {
   position: fixed;
   z-index: 70;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
   width: 28px;
   height: 28px;
   display: grid;
@@ -773,6 +775,8 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   box-shadow: 0 4px 14px rgba(21, 5, 3, .26);
   cursor: pointer;
   pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
 }
 #background-studio-background-settings-trigger:hover {
   background: rgba(132, 45, 27, .82);
@@ -781,6 +785,7 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   width: 16px;
   height: 16px;
   color: currentColor;
+  pointer-events: none;
 }
 
 #background-studio-background-settings {
