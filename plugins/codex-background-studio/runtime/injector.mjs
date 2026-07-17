@@ -178,6 +178,10 @@ async function verifySession(session) {
     const home = document.querySelector('.background-studio-home');
     const suggestions = home?.querySelector('.group\\\\/home-suggestions') ?? null;
     const cards = suggestions ? [...suggestions.querySelectorAll('button')].map(box) : [];
+    const sidebar = document.querySelector('aside.app-shell-left-panel');
+    const sidebarIcons = sidebar ? [...sidebar.querySelectorAll('svg')].map(box).filter((item) => item.width > 0 && item.height > 0) : [];
+    const oversizedSidebarIcons = sidebarIcons.filter((item) => item.width > 20 || item.height > 20);
+    const loadingIcon = box(sidebar?.querySelector('[data-app-action-sidebar-thread-row] .animate-spin'));
     const result = {
       installed: document.documentElement.classList.contains('codex-background-studio-skin'),
       version: window.__CODEX_BACKGROUND_STUDIO_SKIN_STATE__?.version ?? null,
@@ -189,15 +193,24 @@ async function verifySession(session) {
       hero: box(home?.firstElementChild?.firstElementChild?.firstElementChild),
       cards,
       composer: box(document.querySelector('.composer-surface-chrome')),
-      sidebar: box(document.querySelector('aside.app-shell-left-panel')),
+      sidebar: box(sidebar),
+      sidebarIcons: {
+        count: sidebarIcons.length,
+        maxWidth: Math.max(0, ...sidebarIcons.map((item) => item.width)),
+        maxHeight: Math.max(0, ...sidebarIcons.map((item) => item.height)),
+        oversized: oversizedSidebarIcons,
+      },
+      loadingIcon,
       viewport: { width: innerWidth, height: innerHeight },
       documentOverflow: {
         x: document.documentElement.scrollWidth > document.documentElement.clientWidth,
         y: document.documentElement.scrollHeight > document.documentElement.clientHeight,
       },
     };
+    result.sidebarIconsPass = oversizedSidebarIcons.length === 0 &&
+      (!loadingIcon || (loadingIcon.width <= 16 && loadingIcon.height <= 16));
     result.pass = result.installed && result.stylePresent && result.chromePresent &&
-      result.chromePointerEvents === 'none' && Boolean(result.composer) && Boolean(result.sidebar) &&
+      result.chromePointerEvents === 'none' && Boolean(result.composer) && Boolean(result.sidebar) && result.sidebarIconsPass &&
       (!result.homePresent || (Boolean(result.hero) &&
         (!result.suggestionsPresent || (result.cards.length >= 2 && result.cards.length <= 4))));
     return result;

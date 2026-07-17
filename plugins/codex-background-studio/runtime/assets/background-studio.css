@@ -1064,3 +1064,37 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   justify-content: center !important;
   text-align: center !important;
 }
+
+/* Sidebar icon normalization: preserve native geometry and theme only the color. */
+html.codex-background-studio-skin aside.app-shell-left-panel button svg,
+html.codex-background-studio-skin aside.app-shell-left-panel [role="button"] svg {
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel svg.icon-2xs {
+  width: 12px !important;
+  height: 12px !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel svg.icon-xs,
+html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label="置顶任务"] > svg,
+html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label="归档任务"] > svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel svg.icon-sm {
+  width: 20px !important;
+  height: 20px !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel [data-app-action-sidebar-thread-row] .animate-spin {
+  width: 16px !important;
+  height: 16px !important;
+  flex: 0 0 16px !important;
+}
+html.codex-background-studio-skin aside.app-shell-left-panel [data-app-action-sidebar-thread-row] .animate-spin > svg {
+  width: 16px !important;
+  height: 16px !important;
+  padding: 0 !important;
+}
