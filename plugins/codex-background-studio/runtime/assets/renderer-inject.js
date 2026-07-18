@@ -21,12 +21,52 @@
     positionY: 50,
     loop: true,
     speed: 1,
+    accentColor: "#ffd982",
+    surfaceColor: "#300508",
   });
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value)));
+
+  /**
+   * 2026-07-18 苍朮
+   * 校验并规范六位十六进制主题色，避免无效存储值进入 CSS 变量。
+   * @param {unknown} value 待校验的颜色值。
+   * @param {string} fallback 校验失败时使用的默认颜色。
+   * @returns {string} 小写的六位十六进制颜色。
+   */
+  const normalizeHexColor = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value).toLowerCase() : fallback;
+
+  /**
+   * 2026-07-18 苍朮
+   * 将六位十六进制颜色转换为 CSS rgb 通道值。
+   * @param {string} value 已校验的十六进制颜色。
+   * @returns {[number, number, number]} 红、绿、蓝三个整数通道。
+   */
+  const hexToRgb = (value) => [1, 3, 5].map((index) => Number.parseInt(value.slice(index, index + 2), 16));
+
+  /**
+   * 2026-07-18 苍朮
+   * 从设置控件读取与控件类型匹配的持久化值。
+   * @param {HTMLInputElement|HTMLSelectElement} control 设置面板中的输入控件。
+   * @returns {boolean|string|number} 复选值、颜色字符串或数值设置。
+   */
+  const readSettingValue = (control) => {
+    if (control.type === "checkbox") return control.checked;
+    if (control.type === "color") return control.value;
+    return Number(control.value);
+  };
+
+  /**
+   * 2026-07-18 苍朮
+   * 读取本地设置并补齐新版本默认值，同时清理无效主题色。
+   * @returns {object} 可直接应用的完整背景与主题设置。
+   */
   const readPreferences = () => {
     try {
-      return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") };
+      const stored = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") };
+      stored.accentColor = normalizeHexColor(stored.accentColor, DEFAULTS.accentColor);
+      stored.surfaceColor = normalizeHexColor(stored.surfaceColor, DEFAULTS.surfaceColor);
+      return stored;
     } catch {
       return { ...DEFAULTS };
     }
@@ -135,10 +175,25 @@
     return String(value);
   };
 
+  /**
+   * 2026-07-18 苍朮
+   * 将背景、媒体和双色主题设置同步到根节点 CSS 变量及当前媒体元素。
+   * @returns {void}
+   */
   const applyPreferences = () => {
     const root = document.documentElement;
     if (!root) return;
     const panelAlpha = clamp(preferences.panelOpacity, 5, 90) / 100;
+    const accentColor = normalizeHexColor(preferences.accentColor, DEFAULTS.accentColor);
+    const surfaceColor = normalizeHexColor(preferences.surfaceColor, DEFAULTS.surfaceColor);
+    const accentRgb = hexToRgb(accentColor);
+    const surfaceRgb = hexToRgb(surfaceColor);
+    const surfaceDeepRgb = surfaceRgb.map((channel) => Math.round(channel * .45));
+    root.style.setProperty("--background-studio-accent-color", accentColor);
+    root.style.setProperty("--background-studio-accent-rgb", accentRgb.join(" "));
+    root.style.setProperty("--background-studio-surface-color", surfaceColor);
+    root.style.setProperty("--background-studio-surface-rgb", surfaceRgb.join(" "));
+    root.style.setProperty("--background-studio-surface-deep-rgb", surfaceDeepRgb.join(" "));
     root.style.setProperty("--background-studio-media-opacity", String(clamp(preferences.mediaOpacity, 10, 100) / 100));
     root.style.setProperty("--background-studio-panel-alpha", panelAlpha.toFixed(2));
     root.style.setProperty("--background-studio-composer-alpha", Math.min(.92, panelAlpha + .24).toFixed(2));
@@ -218,6 +273,11 @@
     refreshMediaLabel();
   };
 
+  /**
+   * 2026-07-18 苍朮
+   * 创建背景设置面板，并绑定媒体、布局及双色主题的持久化交互。
+   * @returns {HTMLElement} 已存在或新创建的设置面板。
+   */
   const buildPanel = () => {
     let panel = document.getElementById(PANEL_ID);
     if (panel) return panel;
@@ -242,6 +302,14 @@
       <div class="background-studio-setting-row"><span>填充方式</span><div class="background-studio-segmented" role="group" aria-label="背景填充方式"><button type="button" data-fit="cover">裁切</button><button type="button" data-fit="contain">完整</button><button type="button" data-fit="fill">拉伸</button></div></div>
       <label class="background-studio-setting-row"><span>水平焦点 <output data-output-for="positionX"></output></span><input type="range" min="0" max="100" step="1" data-setting="positionX"></label>
       <label class="background-studio-setting-row"><span>垂直焦点 <output data-output-for="positionY"></output></span><input type="range" min="0" max="100" step="1" data-setting="positionY"></label>
+      <fieldset class="background-studio-theme-colors">
+        <legend>主题配色</legend>
+        <div class="background-studio-color-grid">
+          <label><span>强调色</span><input type="color" data-setting="accentColor" aria-label="主题强调色"></label>
+          <label><span>表面色</span><input type="color" data-setting="surfaceColor" aria-label="主题表面色"></label>
+        </div>
+        <button type="button" data-action="reset-theme">恢复主题默认</button>
+      </fieldset>
       <div class="background-studio-settings-inline">
         <label><input type="checkbox" data-setting="loop"> 视频循环</label>
         <label>速度 <select data-setting="speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></label>
@@ -253,14 +321,14 @@
     panel.addEventListener("input", (event) => {
       const key = event.target.dataset.setting;
       if (!key || event.target.type === "checkbox" || event.target.tagName === "SELECT") return;
-      preferences[key] = Number(event.target.value);
+      preferences[key] = readSettingValue(event.target);
       savePreferences();
       applyPreferences();
     });
     panel.addEventListener("change", (event) => {
       const key = event.target.dataset.setting;
       if (key) {
-        preferences[key] = event.target.type === "checkbox" ? event.target.checked : event.target.tagName === "SELECT" ? Number(event.target.value) : Number(event.target.value);
+        preferences[key] = readSettingValue(event.target);
         savePreferences();
         applyPreferences();
       }
@@ -277,6 +345,13 @@
       const action = target.dataset.action;
       if (action === "close") panel.classList.remove("is-open");
       if (action === "choose") fileInput.click();
+      if (action === "reset-theme") {
+        preferences.accentColor = DEFAULTS.accentColor;
+        preferences.surfaceColor = DEFAULTS.surfaceColor;
+        savePreferences();
+        syncPanel();
+        setStatus("已恢复默认主题配色");
+      }
       if (action === "toggle-play" && currentMediaElement instanceof HTMLVideoElement) {
         if (currentMediaElement.paused) await currentMediaElement.play().catch(() => setStatus("视频播放被系统阻止"));
         else currentMediaElement.pause();
@@ -314,6 +389,11 @@
     return panel;
   };
 
+  /**
+   * 2026-07-18 苍朮
+   * 将当前持久化设置回填到设置面板控件并刷新预览。
+   * @returns {void}
+   */
   const syncPanel = () => {
     const panel = document.getElementById(PANEL_ID);
     if (!panel) return;
@@ -346,25 +426,57 @@
     "显示/隐藏侧边栏", "show/hide sidebar", "toggle sidebar",
   ]);
 
+  /**
+   * 2026-07-18 苍朮
+   * 查找右上工具栏同一行的最左侧原生控件，为注入按钮预留完整工具栏宽度。
+   * @param {HTMLElement|null} referenceNode 已知的摘要或侧栏工具栏按钮。
+   * @returns {HTMLElement|null} 工具栏集群最左侧的紧凑原生控件。
+   */
+  const findToolbarClusterStart = (referenceNode = null) => {
+    const referenceBox = referenceNode?.getBoundingClientRect() ?? null;
+    const referenceCenter = referenceBox ? referenceBox.top + referenceBox.height / 2 : null;
+    return [...document.querySelectorAll('button, a, [role="button"]')]
+      .filter((node) => {
+        if (node.id === TRIGGER_ID) return false;
+        const box = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
+        if (box.width <= 0 || box.height <= 0 || box.width > 48 || box.height > 48 || box.top < 0 || box.top >= 100) return false;
+        if (style.display === "none" || style.visibility === "hidden" || style.pointerEvents === "none") return false;
+        if (referenceBox) {
+          const center = box.top + box.height / 2;
+          return Math.abs(center - referenceCenter) <= 2 && box.left >= referenceBox.left - 240 && box.right <= innerWidth;
+        }
+        return box.right > innerWidth - 240;
+      })
+      .sort((left, right) => left.getBoundingClientRect().left - right.getBoundingClientRect().left)[0] || null;
+  };
+
+  /**
+   * 2026-07-18 苍朮
+   * 将设置按钮放到完整原生工具栏左侧，并在其下方约束设置面板。
+   * @returns {void}
+   */
   const positionControls = () => {
     const trigger = document.getElementById(TRIGGER_ID);
     const panel = document.getElementById(PANEL_ID);
     if (!trigger || !panel) return;
     const summaryToggle = findSummaryToggle();
-    const toolbarAnchor = summaryToggle || findSidebarToggle();
+    const referenceAnchor = summaryToggle || findSidebarToggle();
+    const toolbarAnchor = findToolbarClusterStart(referenceAnchor);
     const anchorBox = toolbarAnchor?.getBoundingClientRect();
-    if (anchorBox) {
+    const referenceBox = referenceAnchor?.getBoundingClientRect() ?? anchorBox;
+    if (anchorBox && referenceBox) {
       const triggerBox = trigger.getBoundingClientRect();
       const size = triggerBox.width || 28;
       const x = Math.max(8, Math.round(anchorBox.left - size - 6));
-      const y = Math.round(anchorBox.top + (anchorBox.height - size) / 2);
-      const panelTop = Math.round(anchorBox.bottom + 8);
+      const y = Math.round(referenceBox.top + (referenceBox.height - size) / 2);
+      const panelTop = Math.round(referenceBox.bottom + 8);
       trigger.style.left = `${x}px`;
       trigger.style.right = "auto";
       trigger.style.top = `${y}px`;
       trigger.style.bottom = "auto";
       panel.style.left = "auto";
-      panel.style.right = `${Math.max(12, Math.round(innerWidth - anchorBox.right))}px`;
+      panel.style.right = "12px";
       panel.style.top = `${panelTop}px`;
       panel.style.bottom = "auto";
       panel.style.maxHeight = `${Math.max(160, innerHeight - panelTop - 12)}px`;
@@ -381,8 +493,18 @@
     panel.style.maxHeight = "";
   };
 
+  /**
+   * 2026-07-18 苍朮
+   * 仅在含原生侧栏的主 Codex 窗口创建设置入口，辅助窗口会移除注入控件。
+   * @returns {void}
+   */
   const ensureSettingsControl = () => {
     if (!document.body) return;
+    if (!document.querySelector("aside.app-shell-left-panel")) {
+      document.getElementById(PANEL_ID)?.remove();
+      document.getElementById(TRIGGER_ID)?.remove();
+      return;
+    }
     const panel = buildPanel();
     let trigger = document.getElementById(TRIGGER_ID);
     if (!trigger) {
@@ -475,6 +597,11 @@
     applyPreferences();
   };
 
+  /**
+   * 2026-07-18 苍朮
+   * 移除 Background Studio 注入的节点、监听器和全部媒体及主题 CSS 变量。
+   * @returns {boolean} 清理流程完成后返回 true。
+   */
   const cleanup = () => {
     window.__CODEX_BACKGROUND_STUDIO_SKIN_DISABLED__ = true;
     const state = window[STATE_KEY];
@@ -483,7 +610,7 @@
     if (state?.scheduler?.timeout) clearTimeout(state.scheduler.timeout);
     if (state?.onResize) window.removeEventListener("resize", state.onResize);
     document.documentElement?.classList.remove("codex-background-studio-skin", "background-studio-media-active");
-    ["--background-studio-art", "--background-studio-media-opacity", "--background-studio-panel-alpha", "--background-studio-composer-alpha", "--background-studio-header-alpha", "--background-studio-scrim-alpha", "--background-studio-media-blur", "--background-studio-media-fit", "--background-studio-media-x", "--background-studio-media-y"].forEach((key) => document.documentElement?.style.removeProperty(key));
+    ["--background-studio-art", "--background-studio-media-opacity", "--background-studio-panel-alpha", "--background-studio-composer-alpha", "--background-studio-header-alpha", "--background-studio-scrim-alpha", "--background-studio-media-blur", "--background-studio-media-fit", "--background-studio-media-x", "--background-studio-media-y", "--background-studio-accent-color", "--background-studio-accent-rgb", "--background-studio-surface-color", "--background-studio-surface-rgb", "--background-studio-surface-deep-rgb"].forEach((key) => document.documentElement?.style.removeProperty(key));
     document.querySelectorAll(".background-studio-home").forEach((node) => node.classList.remove("background-studio-home"));
     document.querySelectorAll(".background-studio-home-shell").forEach((node) => node.classList.remove("background-studio-home-shell"));
     document.querySelectorAll(".background-studio-composer-frame").forEach((node) => node.classList.remove("background-studio-composer-frame"));

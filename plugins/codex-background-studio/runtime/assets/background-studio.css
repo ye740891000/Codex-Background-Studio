@@ -462,6 +462,11 @@ html.codex-background-studio-skin [data-message-author-role] {
 /* Dark gold base: retain native controls beneath the media layer. */
 :root.codex-background-studio-skin {
   color-scheme: dark !important;
+  --background-studio-accent-color: #ffd982;
+  --background-studio-accent-rgb: 255 217 130;
+  --background-studio-surface-color: #300508;
+  --background-studio-surface-rgb: 48 5 8;
+  --background-studio-surface-deep-rgb: 22 2 4;
   --background-studio-ink: #e5e7eb;
   --background-studio-purple: #d1a56a;
   --background-studio-violet: #e5c38e;
@@ -494,9 +499,9 @@ html.codex-background-studio-skin aside.app-shell-left-panel button { color: #d6
 html.codex-background-studio-skin aside.app-shell-left-panel button:hover,
 html.codex-background-studio-skin aside.app-shell-left-panel [class~="bg-token-list-hover-background"],
 html.codex-background-studio-skin aside.app-shell-left-panel [aria-current="page"] {
-  background: linear-gradient(90deg, rgba(121, 82, 49, .54), rgba(46, 61, 80, .62)) !important;
-  border-color: rgba(201, 154, 93, .34) !important;
-  box-shadow: inset 0 0 0 1px rgba(221, 183, 125, .15) !important;
+  background: linear-gradient(90deg, rgb(var(--background-studio-surface-rgb) / .54), rgb(var(--background-studio-surface-deep-rgb) / .62)) !important;
+  border-color: rgb(var(--background-studio-accent-rgb) / .34) !important;
+  box-shadow: inset 0 0 0 1px rgb(var(--background-studio-accent-rgb) / .15) !important;
 }
 
 html.codex-background-studio-skin main.main-surface > header.app-header-tint {
@@ -550,20 +555,20 @@ html.codex-background-studio-skin button[class~="bg-token-foreground"] { backgro
 
 /* Use the supplied illustration as the actual workspace background, with readable live controls above it. */
 html.codex-background-studio-skin main.main-surface {
-  background-image: linear-gradient(90deg, rgba(48, 5, 8, .20), rgba(20, 9, 5, .10)), var(--background-studio-art) !important;
+  background-image: linear-gradient(90deg, rgb(var(--background-studio-surface-rgb) / .20), rgb(var(--background-studio-surface-deep-rgb) / .10)), var(--background-studio-art) !important;
   background-size: cover !important;
   background-position: center !important;
   background-attachment: fixed !important;
 }
 
 html.codex-background-studio-skin body {
-  background-image: linear-gradient(90deg, rgba(48, 5, 8, .12), rgba(20, 9, 5, .06)), var(--background-studio-art) !important;
+  background-image: linear-gradient(90deg, rgb(var(--background-studio-surface-rgb) / .12), rgb(var(--background-studio-surface-deep-rgb) / .06)), var(--background-studio-art) !important;
   background-size: cover !important;
   background-position: center !important;
   background-attachment: fixed !important;
 }
 html.codex-background-studio-skin {
-  background-image: linear-gradient(90deg, rgba(48, 5, 8, .12), rgba(20, 9, 5, .06)), var(--background-studio-art) !important;
+  background-image: linear-gradient(90deg, rgb(var(--background-studio-surface-rgb) / .12), rgb(var(--background-studio-surface-deep-rgb) / .06)), var(--background-studio-art) !important;
   background-size: cover !important;
   background-position: center !important;
   background-attachment: fixed !important;
@@ -571,30 +576,30 @@ html.codex-background-studio-skin {
 
 html.codex-background-studio-skin [role="main"] { background: transparent !important; }
 html.codex-background-studio-skin main.main-surface > header.app-header-tint {
-  background: linear-gradient(90deg, rgba(46, 6, 9, .42), rgba(31, 16, 8, .26)) !important;
+  background: linear-gradient(90deg, rgb(var(--background-studio-surface-rgb) / .42), rgb(var(--background-studio-surface-deep-rgb) / .26)) !important;
   backdrop-filter: blur(5px) !important;
 }
 html.codex-background-studio-skin aside.app-shell-left-panel {
-  background: linear-gradient(180deg, rgba(46, 6, 9, .24), rgba(27, 12, 8, .20)) !important;
-  border-color: rgba(224, 177, 95, .42) !important;
+  background: linear-gradient(180deg, rgb(var(--background-studio-surface-rgb) / .24), rgb(var(--background-studio-surface-deep-rgb) / .20)) !important;
+  border-color: rgb(var(--background-studio-accent-rgb) / .42) !important;
   backdrop-filter: blur(2px) !important;
 }
 html.codex-background-studio-skin .composer-surface-chrome,
 .background-studio-home .group\/home-suggestions button {
-  background: linear-gradient(145deg, rgba(49, 22, 16, .52), rgba(21, 12, 9, .46)) !important;
-  border-color: rgba(220, 169, 91, .54) !important;
+  background: linear-gradient(145deg, rgb(var(--background-studio-surface-rgb) / .52), rgb(var(--background-studio-surface-deep-rgb) / .46)) !important;
+  border-color: rgb(var(--background-studio-accent-rgb) / .54) !important;
   backdrop-filter: blur(4px) !important;
 }
 .background-studio-sparkles { display: none !important; }
 
 /* Meadow icon treatment: preserve native glyphs while matching the landscape palette. */
 html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label^="切换模式"] {
-  color: #f0c36e !important;
-  text-shadow: 0 2px 10px rgba(170, 47, 30, .40) !important;
+  color: var(--background-studio-accent-color) !important;
+  text-shadow: 0 2px 10px rgb(var(--background-studio-surface-rgb) / .40) !important;
 }
 html.codex-background-studio-skin aside.app-shell-left-panel button[aria-label^="切换模式"]::after {
   content: "★";
-  color: #ffd76d;
+  color: var(--background-studio-accent-color);
 }
 html.codex-background-studio-skin aside.app-shell-left-panel button svg,
 html.codex-background-studio-skin aside.app-shell-left-panel [role="button"] svg {
@@ -603,29 +608,29 @@ html.codex-background-studio-skin aside.app-shell-left-panel [role="button"] svg
   padding: 3px;
   box-sizing: content-box;
   border-radius: 7px;
-  color: #ffd982 !important;
-  background: linear-gradient(145deg, rgba(196, 53, 35, .34), rgba(165, 108, 35, .30));
-  box-shadow: inset 0 0 0 1px rgba(255, 225, 151, .20), 0 2px 8px rgba(55, 8, 4, .26);
+  color: var(--background-studio-accent-color) !important;
+  background: linear-gradient(145deg, rgb(var(--background-studio-surface-rgb) / .34), rgb(var(--background-studio-accent-rgb) / .30));
+  box-shadow: inset 0 0 0 1px rgb(var(--background-studio-accent-rgb) / .20), 0 2px 8px rgb(var(--background-studio-surface-deep-rgb) / .26);
 }
 html.codex-background-studio-skin aside.app-shell-left-panel button:hover svg,
 html.codex-background-studio-skin aside.app-shell-left-panel [aria-current="page"] svg {
-  color: #fff4b2 !important;
-  background: linear-gradient(145deg, rgba(205, 49, 35, .66), rgba(190, 127, 36, .58));
-  box-shadow: inset 0 0 0 1px rgba(255, 229, 154, .38), 0 3px 10px rgba(68, 9, 4, .34);
+  color: color-mix(in srgb, var(--background-studio-accent-color) 72%, white) !important;
+  background: linear-gradient(145deg, rgb(var(--background-studio-surface-rgb) / .66), rgb(var(--background-studio-accent-rgb) / .58));
+  box-shadow: inset 0 0 0 1px rgb(var(--background-studio-accent-rgb) / .38), 0 3px 10px rgb(var(--background-studio-surface-rgb) / .34);
 }
 html.codex-background-studio-skin main button svg {
-  color: #ffd982 !important;
-  filter: drop-shadow(0 1px 3px rgba(76, 15, 5, .48));
+  color: var(--background-studio-accent-color) !important;
+  filter: drop-shadow(0 1px 3px rgb(var(--background-studio-surface-rgb) / .48));
 }
 html.codex-background-studio-skin main button:hover svg,
 html.codex-background-studio-skin main button[aria-pressed="true"] svg {
-  color: #fff3b0 !important;
+  color: color-mix(in srgb, var(--background-studio-accent-color) 72%, white) !important;
 }
 html.codex-background-studio-skin button[class~="bg-token-foreground"] {
-  background: linear-gradient(145deg, #d14a32, #b68332) !important;
-  box-shadow: 0 5px 14px rgba(94, 18, 9, .38) !important;
+  background: linear-gradient(145deg, var(--background-studio-surface-color), color-mix(in srgb, var(--background-studio-accent-color) 65%, var(--background-studio-surface-color))) !important;
+  box-shadow: 0 5px 14px rgb(var(--background-studio-surface-rgb) / .38) !important;
 }
-html.codex-background-studio-skin .ProseMirror { caret-color: #ffd46f !important; }
+html.codex-background-studio-skin .ProseMirror { caret-color: var(--background-studio-accent-color) !important; }
 .background-studio-home [data-feature="game-source"]::after {
   content: "专注当下，把每一步做扎实";
 }
@@ -695,7 +700,7 @@ html.codex-background-studio-skin.background-studio-media-active #root {
   background: rgba(0, 0, 0, var(--background-studio-scrim-alpha, .08));
 }
 html.codex-background-studio-skin.background-studio-media-active aside.app-shell-left-panel {
-  background: linear-gradient(180deg, rgb(46 6 9 / var(--background-studio-panel-alpha, .24)), rgb(27 12 8 / var(--background-studio-panel-alpha, .24))) !important;
+  background: linear-gradient(180deg, rgb(var(--background-studio-surface-rgb) / var(--background-studio-panel-alpha, .24)), rgb(var(--background-studio-surface-deep-rgb) / var(--background-studio-panel-alpha, .24))) !important;
 }
 html.codex-background-studio-skin.background-studio-media-active main.main-surface > header.app-header-tint {
   background: transparent !important;
@@ -705,7 +710,7 @@ html.codex-background-studio-skin.background-studio-media-active main.main-surfa
 }
 html.codex-background-studio-skin.background-studio-media-active .composer-surface-chrome,
 html.codex-background-studio-skin.background-studio-media-active .background-studio-home .group\/home-suggestions button {
-  background: linear-gradient(145deg, rgb(49 22 16 / var(--background-studio-composer-alpha, .48)), rgb(21 12 9 / var(--background-studio-composer-alpha, .48))) !important;
+  background: linear-gradient(145deg, rgb(var(--background-studio-surface-rgb) / var(--background-studio-composer-alpha, .48)), rgb(var(--background-studio-surface-deep-rgb) / var(--background-studio-composer-alpha, .48))) !important;
 }
 html.codex-background-studio-skin.background-studio-media-active .background-studio-home > div:first-child > div:first-child > div:first-child {
   background: rgb(14 20 27 / var(--background-studio-header-alpha, .36)) !important;
@@ -768,18 +773,18 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   display: grid;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(255, 214, 126, .42);
+  border: 1px solid rgb(var(--background-studio-accent-rgb) / .42);
   border-radius: 8px;
-  color: #ffe19a;
-  background: rgba(52, 20, 13, .72);
-  box-shadow: 0 4px 14px rgba(21, 5, 3, .26);
+  color: var(--background-studio-accent-color);
+  background: rgb(var(--background-studio-surface-rgb) / .72);
+  box-shadow: 0 4px 14px rgb(var(--background-studio-surface-deep-rgb) / .26);
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
   -webkit-user-select: none;
 }
 #background-studio-background-settings-trigger:hover {
-  background: rgba(132, 45, 27, .82);
+  background: color-mix(in srgb, var(--background-studio-surface-color) 82%, white);
 }
 #background-studio-background-settings-trigger svg {
   width: 16px;
@@ -796,7 +801,7 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   display: none;
   overflow: auto;
   padding: 14px;
-  border: 1px solid rgba(255, 218, 139, .36);
+  border: 1px solid rgb(var(--background-studio-accent-rgb) / .36);
   border-radius: 8px;
   color: #f6f1e8;
   background: rgba(18, 21, 27, .96);
@@ -863,11 +868,11 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   justify-content: space-between;
   color: #dce2e8;
 }
-.background-studio-setting-row output { color: #f1c96f; }
+.background-studio-setting-row output { color: var(--background-studio-accent-color); }
 .background-studio-setting-row input[type="range"] {
   width: 100%;
   margin: 0;
-  accent-color: #d3a84b;
+  accent-color: var(--background-studio-accent-color);
 }
 .background-studio-segmented {
   display: grid;
@@ -875,10 +880,52 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   gap: 4px;
 }
 .background-studio-segmented button.is-active {
-  color: #fff0b8;
-  border-color: rgba(245, 198, 94, .66);
-  background: rgba(173, 111, 31, .34);
+  color: color-mix(in srgb, var(--background-studio-accent-color) 72%, white);
+  border-color: rgb(var(--background-studio-accent-rgb) / .66);
+  background: rgb(var(--background-studio-accent-rgb) / .18);
 }
+.background-studio-theme-colors {
+  margin: 13px 0 0;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px;
+}
+.background-studio-theme-colors legend {
+  padding: 0 5px;
+  color: #dce2e8;
+}
+.background-studio-color-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.background-studio-color-grid label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #dce2e8;
+}
+.background-studio-color-grid input[type="color"] {
+  width: 34px;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 5px;
+  background: #242a32;
+  cursor: pointer;
+}
+.background-studio-theme-colors > button {
+  width: 100%;
+  min-height: 30px;
+  margin-top: 9px;
+  border: 1px solid rgb(var(--background-studio-accent-rgb) / .30);
+  border-radius: 6px;
+  color: #eef2f5;
+  background: rgb(var(--background-studio-surface-rgb) / .46);
+  cursor: pointer;
+}
+.background-studio-theme-colors > button:hover { background: rgb(var(--background-studio-surface-rgb) / .70); }
 .background-studio-settings-inline {
   display: flex;
   align-items: center;
@@ -887,7 +934,7 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   margin-top: 13px;
 }
 .background-studio-settings-inline label { display: flex; align-items: center; gap: 6px; }
-.background-studio-settings-inline input { accent-color: #d3a84b; }
+.background-studio-settings-inline input { accent-color: var(--background-studio-accent-color); }
 .background-studio-settings-inline select {
   height: 30px;
   border: 1px solid rgba(255,255,255,.16);
@@ -988,9 +1035,9 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
 .background-studio-home .group\/home-suggestions button {
   min-height: 104px !important;
   padding: 12px !important;
-  border: 1px solid rgba(231, 191, 112, .32) !important;
+  border: 1px solid rgb(var(--background-studio-accent-rgb) / .32) !important;
   border-radius: 8px !important;
-  background: rgb(25 18 16 / var(--background-studio-panel-alpha, .24)) !important;
+  background: rgb(var(--background-studio-surface-rgb) / var(--background-studio-panel-alpha, .24)) !important;
   color: #f4f1eb !important;
   text-align: left !important;
   box-shadow: none !important;
@@ -998,8 +1045,8 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   transform: none !important;
 }
 .background-studio-home .group\/home-suggestions button:hover {
-  border-color: rgba(245, 204, 117, .58) !important;
-  background: rgba(99, 48, 28, .38) !important;
+  border-color: rgb(var(--background-studio-accent-rgb) / .58) !important;
+  background: rgb(var(--background-studio-surface-rgb) / .38) !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -1011,8 +1058,8 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   height: 30px !important;
   margin: 0 !important;
   border-radius: 6px !important;
-  color: #ffe09b !important;
-  background: rgba(154, 74, 38, .50) !important;
+  color: var(--background-studio-accent-color) !important;
+  background: rgb(var(--background-studio-surface-rgb) / .50) !important;
   box-shadow: none !important;
 }
 .background-studio-home .group\/home-suggestions button > span:last-child {
@@ -1028,7 +1075,7 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   padding-top: 6px !important;
   border: 0 !important;
   border-radius: 8px 8px 0 0 !important;
-  background: linear-gradient(145deg, rgb(49 22 16 / var(--background-studio-composer-alpha, .48)), rgb(21 12 9 / var(--background-studio-composer-alpha, .48))) !important;
+  background: linear-gradient(145deg, rgb(var(--background-studio-surface-rgb) / var(--background-studio-composer-alpha, .48)), rgb(var(--background-studio-surface-deep-rgb) / var(--background-studio-composer-alpha, .48))) !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
 }
@@ -1037,9 +1084,9 @@ html.codex-background-studio-skin .background-studio-composer-aux-surface::after
   display: none !important;
 }
 .background-studio-home .group\/project-selector > button {
-  border-color: rgba(231, 191, 112, .28) !important;
+  border-color: rgb(var(--background-studio-accent-rgb) / .28) !important;
   background: rgba(255, 255, 255, .06) !important;
-  color: #f4e2b8 !important;
+  color: color-mix(in srgb, var(--background-studio-accent-color) 72%, white) !important;
   box-shadow: none !important;
 }
 .background-studio-home .composer-surface-chrome {

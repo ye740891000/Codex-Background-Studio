@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { isCodexRendererTarget } from "../runtime/target-discovery.mjs";
 import { buildMacAutoCloseLauncher } from "./macos-launcher.mjs";
 import { matchingAppProcesses, waitForInitialAppExit } from "./process-lifecycle.mjs";
 
@@ -64,12 +65,18 @@ function commandOutput(command, args) {
   return result.status === 0 ? result.stdout.trim() : "";
 }
 
+/**
+ * 2026-07-18 苍朮
+ * 从回环 CDP 端口读取可注入的 Codex 页面，包含 Arch Linux 本地 WebView 目标。
+ * @param {number} port Chromium DevTools Protocol 的本地端口。
+ * @returns {Promise<Array<object>>} 已通过平台与来源校验的 Codex 页面目标。
+ */
 async function getTargets(port) {
   for (const host of LOOPBACK_HOSTS) {
     try {
       const response = await fetch(`http://${host}:${port}/json/list`, { signal: AbortSignal.timeout(1200) });
       if (!response.ok) continue;
-      const targets = (await response.json()).filter((target) => target.type === "page" && target.url.startsWith("app://"));
+      const targets = (await response.json()).filter((target) => isCodexRendererTarget(target));
       if (targets.length) return targets;
     } catch {}
   }
