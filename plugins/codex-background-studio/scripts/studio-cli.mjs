@@ -245,6 +245,12 @@ async function installedCli(root = dataRoot()) {
   return path.join(root, "scripts", "studio-cli.mjs");
 }
 
+/**
+ * 2026-07-18 苍朮
+ * 为 macOS 或 Linux 写入平台原生启动入口，Linux 入口同时安装透明图标并声明 Codex 窗口类。
+ * @param {string} root Background Studio 的用户级安装目录。
+ * @returns {Promise<object|null>} 已创建的启动入口路径；没有额外入口信息时返回 null。
+ */
 async function writeUnixLaunchers(root) {
   const cli = await installedCli(root);
   const launcher = `#!/bin/sh\nexec ${shellQuote(process.execPath)} ${shellQuote(cli)} launch "$@"\n`;
@@ -300,20 +306,34 @@ async function writeUnixLaunchers(root) {
 
   if (process.platform === "linux") {
     const desktopDir = path.join(os.homedir(), ".local", "share", "applications");
+    const iconDir = path.join(os.homedir(), ".local", "share", "icons", "hicolor", "512x512", "apps");
+    const desktopEntry = path.join(desktopDir, "codex-background-studio.desktop");
+    const iconPath = path.join(iconDir, "codex-background-studio.png");
     await fs.mkdir(desktopDir, { recursive: true });
-    await fs.writeFile(path.join(desktopDir, "codex-background-studio.desktop"), [
+    await fs.mkdir(iconDir, { recursive: true });
+    await fs.copyFile(path.join(root, "runtime", "assets", "linux-app-icon.png"), iconPath);
+    await fs.writeFile(desktopEntry, [
       "[Desktop Entry]",
       "Type=Application",
       "Name=Codex Background Studio",
       `Exec=${path.join(root, "launch.sh")}`,
+      `Icon=${iconPath}`,
       "Terminal=false",
+      "StartupNotify=true",
+      "StartupWMClass=codex",
       "Categories=Development;Utility;",
       "",
     ].join("\n"), "utf8");
+    return { desktopEntry, iconPath };
   }
   return null;
 }
 
+/**
+ * 2026-07-18 苍朮
+ * 移除当前平台由 Background Studio 管理的用户级启动入口与专用图标。
+ * @returns {Promise<void>}
+ */
 async function removeUnixLaunchers() {
   if (process.platform === "darwin") {
     await fs.rm(path.join(os.homedir(), "Applications", "Codex Background Studio.app"), { recursive: true, force: true });
@@ -322,6 +342,7 @@ async function removeUnixLaunchers() {
   }
   if (process.platform === "linux") {
     await fs.rm(path.join(os.homedir(), ".local", "share", "applications", "codex-background-studio.desktop"), { force: true });
+    await fs.rm(path.join(os.homedir(), ".local", "share", "icons", "hicolor", "512x512", "apps", "codex-background-studio.png"), { force: true });
   }
 }
 
