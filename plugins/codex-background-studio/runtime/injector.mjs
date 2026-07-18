@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { isCodexRendererTarget } from "./target-discovery.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = here;
@@ -102,6 +103,13 @@ class CdpSession {
   }
 }
 
+/**
+ * 2026-07-18 苍朮
+ * 等待可安全注入的 Codex 渲染器出现，并兼容 Arch Linux 的回环 WebView 页面。
+ * @param {number} port Chromium DevTools Protocol 的本地端口。
+ * @param {number} timeoutMs 最长等待时间，单位为毫秒。
+ * @returns {Promise<Array<object>>} 当前可连接的 Codex 页面目标。
+ */
 async function waitForTargets(port, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   let lastError;
@@ -111,7 +119,7 @@ async function waitForTargets(port, timeoutMs) {
         const response = await fetch(`http://${host}:${port}/json/list`, { signal: AbortSignal.timeout(1200) });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const targets = await response.json();
-        const pages = targets.filter((item) => item.type === "page" && item.url.startsWith("app://"));
+        const pages = targets.filter((item) => isCodexRendererTarget(item));
         if (pages.length) return pages;
       } catch (error) {
         lastError = error;
@@ -171,6 +179,12 @@ async function purgeFromSession(session) {
   })()`);
 }
 
+/**
+ * 2026-07-18 苍朮
+ * 核验注入布局、原生控件避让和关键视觉节点是否在当前 Codex 页面正常工作。
+ * @param {CdpSession} session 已打开的 Codex CDP 会话。
+ * @returns {Promise<object>} 包含布局明细与总体验证结果的对象。
+ */
 async function verifySession(session) {
   return session.evaluate(`(() => {
     const box = (node) => {
@@ -213,6 +227,30 @@ async function verifySession(session) {
         })
         .sort((left, right) => right.getBoundingClientRect().right - left.getBoundingClientRect().right)[0] || null;
     };
+    /**
+     * 2026-07-18 苍朮
+     * 在验证上下文中查找顶部原生操作组的最左侧控件。
+     * @param {HTMLElement|null} referenceNode 已知的摘要或侧栏按钮。
+     * @returns {HTMLElement|null} 同行原生操作组的最左侧控件。
+     */
+    const findToolbarClusterStart = (referenceNode = null) => {
+      const referenceRect = referenceNode?.getBoundingClientRect() ?? null;
+      const referenceCenter = referenceRect ? referenceRect.top + referenceRect.height / 2 : null;
+      return [...document.querySelectorAll('button, a, [role="button"]')]
+        .filter((node) => {
+          if (node === settingsTriggerNode) return false;
+          const rect = node.getBoundingClientRect();
+          const style = getComputedStyle(node);
+          if (rect.width <= 0 || rect.height <= 0 || rect.width > 48 || rect.height > 48 || rect.top < 0 || rect.top >= 100) return false;
+          if (style.display === 'none' || style.visibility === 'hidden' || style.pointerEvents === 'none') return false;
+          if (referenceRect) {
+            const center = rect.top + rect.height / 2;
+            return Math.abs(center - referenceCenter) <= 2 && rect.left >= referenceRect.left - 240 && rect.right <= innerWidth;
+          }
+          return rect.right > innerWidth - 240;
+        })
+        .sort((left, right) => left.getBoundingClientRect().left - right.getBoundingClientRect().left)[0] || null;
+    };
     const summaryToggleNode = findToolbarButton([
       '切换摘要', '切换置顶摘要', '切换指定摘要',
       'toggle summary', 'toggle pinned summary', 'toggle selected summary',
@@ -221,7 +259,8 @@ async function verifySession(session) {
     const sidebarToggleNode = findToolbarButton([
       '显示/隐藏侧边栏', 'show/hide sidebar', 'toggle sidebar',
     ]);
-    const toolbarAnchorNode = summaryToggleNode || sidebarToggleNode;
+    const toolbarReferenceNode = summaryToggleNode || sidebarToggleNode;
+    const toolbarAnchorNode = findToolbarClusterStart(toolbarReferenceNode);
     const toolbarAnchorRect = toolbarAnchorNode?.getBoundingClientRect() ?? null;
     const overlaps = (a, b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
     const nativeControlOverlaps = settingsTriggerRect
@@ -278,7 +317,7 @@ async function verifySession(session) {
         summaryGap,
         summaryCenterDelta,
         toolbarAnchor: box(toolbarAnchorNode),
-        toolbarAnchorKind: summaryToggleNode ? 'summary' : sidebarToggleNode ? 'sidebar' : 'fixed',
+        toolbarAnchorKind: toolbarAnchorNode ? 'cluster' : 'fixed',
         toolbarAnchorGap,
         toolbarAnchorCenterDelta,
       },

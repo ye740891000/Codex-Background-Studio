@@ -1,13 +1,25 @@
 import path from "node:path";
 
+const POSIX_SHELL_NAMES = new Set(["bash", "dash", "sh", "zsh"]);
+
 function canonical(value) {
   return String(value || "").replaceAll("\\", "/").replace(/\/+$/, "").toLowerCase();
 }
 
+/**
+ * 2026-07-18 苍朮
+ * 判断进程命令是否直接启动目标程序，或通过 Arch 常见的 POSIX Shell 包装脚本启动目标程序。
+ * @param {string} command 进程表中的完整命令行。
+ * @param {string} executable 期望匹配的 Codex 可执行文件路径。
+ * @returns {boolean} 命令直接或经受信任的 Shell 包装启动目标程序时返回 true。
+ */
 function commandStartsWithExecutable(command, executable) {
   const normalizedCommand = canonical(command);
   const normalizedExecutable = canonical(executable);
-  return normalizedCommand === normalizedExecutable || normalizedCommand.startsWith(`${normalizedExecutable} `);
+  if (normalizedCommand === normalizedExecutable || normalizedCommand.startsWith(`${normalizedExecutable} `)) return true;
+
+  const [interpreter, wrappedExecutable] = normalizedCommand.split(/\s+/, 3);
+  return POSIX_SHELL_NAMES.has(path.basename(interpreter)) && wrappedExecutable === normalizedExecutable;
 }
 
 export function appProcessMatches(app, processInfo) {

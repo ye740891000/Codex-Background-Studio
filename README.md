@@ -45,7 +45,7 @@ open ~/Applications
 
 ### Linux
 
-首期基线：Ubuntu 22.04/24.04 x64。
+已验证基线：Ubuntu 22.04/24.04 x64，以及 Arch Linux x64 + X11。Arch 环境支持通过 `/usr/bin/codex-desktop` Shell 包装器启动，并识别该软件包在 `localhost:5175` 提供的本地 WebView。
 
 ```bash
 chmod +x install.sh launch.sh uninstall.sh
@@ -59,15 +59,18 @@ chmod +x install.sh launch.sh uninstall.sh
 CODEX_EXECUTABLE=/path/to/official-codex ./launch.sh
 ```
 
+Arch Linux 上可以正常使用 `openai-codex-desktop` 提供的 `codex-desktop` 命令，无需设置 `CODEX_EXECUTABLE`。Wayland 原生会话尚未完成验证；当 Electron 自动回退到 X11/XWayland 时通常仍可工作，但不属于当前已验证基线。
+
 ## 更换背景
 
-启动后，点击 Codex 左下角设置区旁的背景按钮：
+启动后，点击 Codex 顶部工具栏中的 Background Studio 设置按钮。按钮会自动放在原生操作组左侧，避免遮挡“打开位置”等 Codex 控件：
 
 - 选择 JPG、PNG、GIF、MP4 或 WebM
 - 调整背景亮度、面板不透明度、暗色遮罩和模糊
 - 选择裁切、完整显示或拉伸
 - 调整水平、垂直焦点
 - 控制视频循环、播放暂停和 0.5x-2x 速度
+- 自定义主题强调色（默认黄色）和表面色（默认深红色），并可单独恢复主题默认值
 - 一键恢复项目内置的国徽默认背景
 
 媒体仅保存在本机 Codex 渲染器的 IndexedDB 中，不会上传。
@@ -82,7 +85,7 @@ CODEX_EXECUTABLE=/path/to/official-codex ./launch.sh
 - 建议卡片使用稳定的纯文字布局，规避 Codex 版本变化造成的图标错位
 - 清除对话输入框四周、任务状态条下方的割裂阴影，并保留底部间距
 - 保留原生交互、可访问性标签和任务数据，不替换官方业务逻辑
-- 背景按钮会动态避让侧栏中的更新、帮助、个人资料等原生可点击控件
+- 设置按钮会动态识别顶部原生操作组并保持间距，不覆盖 Codex 自带按钮
 
 ## 卸载
 
@@ -122,6 +125,7 @@ codex plugin add codex-background-studio@personal
 ## 安全边界
 
 - CDP 只使用 IPv4/IPv6 loopback，不得代理或暴露到局域网。
+- Linux 本地 WebView 只接受 `http://127.0.0.1:5175`、`http://[::1]:5175` 或 `http://localhost:5175`，不会把其他 HTTP 页面识别为 Codex 渲染器。
 - 已打开但没有调试端口的 Codex 不会被强制关闭；启动器等待用户正常退出。
 - 卸载器会校验 PID 对应的命令行，只停止本项目注入器。
 - 官方应用、签名、任务、认证和配置保持不变。
@@ -136,8 +140,8 @@ Codex Background Studio is a reversible, local-only image/GIF/video background f
 
 - Windows: run `install.cmd`, quit Codex normally, then use the desktop shortcut.
 - macOS: run `./install.command`, then `./launch.command`.
-- Ubuntu/Linux: run `./install.sh`, then `./launch.sh`; set `CODEX_EXECUTABLE` when discovery fails.
-- Open the background button beside the lower-left Codex settings controls to select media and tune presentation.
+- Ubuntu or Arch Linux/X11: run `./install.sh`, then `./launch.sh`; set `CODEX_EXECUTABLE` when discovery fails.
+- Open the Background Studio settings button to the left of the native top-toolbar action group to select media, tune presentation, and customize the accent and surface colors.
 - The bundled compatibility theme flattens the title area, sidebar, new-task surface, suggestion cards, project selector, and composer shadows.
 - Run the matching `uninstall` script to remove the helper. Add `--purge` only when saved media and settings should also be deleted.
 
